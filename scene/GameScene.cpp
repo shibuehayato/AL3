@@ -2,7 +2,6 @@
 #include "TextureManager.h"
 #include <cassert>
 
-
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -21,7 +20,7 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("sample.png");
 
 	// スプライトの生成
-	sprite_ = Sprite::Create(textureHandle_, { 100,50 });
+	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
@@ -41,7 +40,7 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-// スプライトの今の座標を取得
+	// スプライトの今の座標を取得
 	Vector2 position = sprite_->GetPosition();
 	// 座標を{ 2,1 }移動
 	position.x += 2.0f;
@@ -54,7 +53,6 @@ void GameScene::Update() {
 		// 音声停止
 		audio_->StopWave(voiceHandle_);
 	}
-	
 }
 
 void GameScene::Draw() {
