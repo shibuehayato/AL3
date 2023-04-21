@@ -1,7 +1,6 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "ImGuiManager.h"
 
 GameScene::GameScene() {}
 
