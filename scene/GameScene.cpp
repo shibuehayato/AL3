@@ -1,6 +1,7 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "ImGuiManager.h"
 
 GameScene::GameScene() {}
 
@@ -53,8 +54,6 @@ void GameScene::Update() {
 		// 音声停止
 		audio_->StopWave(voiceHandle_);
 	}
-
-
 }
 
 void GameScene::Draw() {
