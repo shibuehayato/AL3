@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "DirectXCommon.h"
 #include "Model.h"
@@ -9,7 +9,7 @@
 
 // 軸方向表示
 class AxisIndicator {
-  public:
+public:
 	// ビューポート矩形範囲
 	static const float kViewPortTopLeftX;
 	static const float kViewPortTopLeftY;
@@ -53,7 +53,7 @@ class AxisIndicator {
 	/// </summary>
 	void Draw();
 
-  private:
+private:
 	AxisIndicator() = default;
 	~AxisIndicator() = default;
 	AxisIndicator(const AxisIndicator&) = delete;

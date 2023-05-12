@@ -1,17 +1,17 @@
-﻿#pragma once
+#pragma once
 #include "Vector3.h"
 #include "Vector4.h"
 #include "ViewProjection.h"
 #include <array>
 #include <cstdint>
 #include <d3d12.h>
-#include <wrl.h>
 #include <memory>
 #include <string>
+#include <wrl.h>
 
 // 基本プリミティブ描画
 class PrimitiveDrawer {
-  public:
+public:
 	// 線分の最大数
 	static const UINT kMaxLineCount = 4096;
 	// 線分の頂点数
@@ -105,9 +105,11 @@ class PrimitiveDrawer {
 	/// ビュープロジェクションのセット
 	/// </summary>
 	/// <param name="viewProjection"></param>
-	void SetViewProjection(const ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
+	void SetViewProjection(const ViewProjection* viewProjection) {
+		viewProjection_ = viewProjection;
+	}
 
-  private:
+private:
 	PrimitiveDrawer() = default;
 	~PrimitiveDrawer() = default;
 	PrimitiveDrawer(const PrimitiveDrawer&) = delete;
@@ -117,7 +119,7 @@ class PrimitiveDrawer {
 	/// グラフィックパイプライン生成
 	/// </summary>
 	std::unique_ptr<PipelineSet>
-	  CreateGraphicsPipeline(D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType, BlendMode blendMode);
+	    CreateGraphicsPipeline(D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType, BlendMode blendMode);
 
 	/// <summary>
 	/// グラフィックパイプライン生成
@@ -138,5 +140,6 @@ class PrimitiveDrawer {
 	// ブレンドモード
 	BlendMode blendMode_ = BlendMode::kBlendModeNormal;
 	// パイプラインセット
-	std::array<std::unique_ptr<PipelineSet>, (uint16_t)BlendMode::kCountOfBlendMode> pipelineSetLines_;
+	std::array<std::unique_ptr<PipelineSet>, (uint16_t)BlendMode::kCountOfBlendMode>
+	    pipelineSetLines_;
 };

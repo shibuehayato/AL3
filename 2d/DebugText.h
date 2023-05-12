@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Sprite.h"
 #include <Windows.h>
@@ -8,13 +8,13 @@
 /// デバッグ用文字表示
 /// </summary>
 class DebugText {
-  public:
+public:
 	// デバッグテキスト用のテクスチャ番号を指定
-	static const int kMaxCharCount = 512; // 最大文字数
-	static const int kFontWidth = 9;      // フォント画像内1文字分の横幅
-	static const int kFontHeight = 18;    // フォント画像内1文字分の縦幅
-	static const int kFontLineCount = 14; // フォント画像内1行分の文字数
-	static const int kBufferSize = 512;   // 書式付き文字列展開用バッファサイズ
+	static const int kMaxCharCount = 1024; // 最大文字数
+	static const int kFontWidth = 9;       // フォント画像内1文字分の横幅
+	static const int kFontHeight = 18;     // フォント画像内1文字分の縦幅
+	static const int kFontLineCount = 14;  // フォント画像内1行分の文字数
+	static const int kBufferSize = 512;    // 書式付き文字列展開用バッファサイズ
 
 	/// <summary>
 	/// シングルトンインスタンスの取得
@@ -51,8 +51,7 @@ class DebugText {
 	/// <summary>
 	/// 描画フラッシュ
 	/// </summary>
-	/// <param name="cmdList">描画コマンドリスト</param>
-	void DrawAll(ID3D12GraphicsCommandList* cmdList);
+	void DrawAll();
 
 	/// <summary>
 	/// 描画座標の指定
@@ -70,7 +69,7 @@ class DebugText {
 	/// <param name="scale">倍率</param>
 	void SetScale(float scale) { scale_ = scale; }
 
-  private:
+private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 	// スプライトデータの配列

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <array>
 #include <d3dx12.h>
@@ -10,7 +10,7 @@
 /// テクスチャマネージャ
 /// </summary>
 class TextureManager {
-  public:
+public:
 	// デスクリプターの数
 	static const size_t kNumDescriptors = 256;
 
@@ -34,6 +34,12 @@ class TextureManager {
 	/// <param name="fileName">ファイル名</param>
 	/// <returns>テクスチャハンドル</returns>
 	static uint32_t Load(const std::string& fileName);
+
+	/// <summary>
+	/// 読み込み解除
+	/// </summary>
+	/// <param name="textureHandle">テクスチャハンドル</param>
+	static bool Unload(uint32_t textureHandle);
 
 	/// <summary>
 	/// シングルトンインスタンスの取得
@@ -66,13 +72,37 @@ class TextureManager {
 	/// <param name="rootParamIndex">ルートパラメータ番号</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	void SetGraphicsRootDescriptorTable(
-	  ID3D12GraphicsCommandList* commandList, UINT rootParamIndex, uint32_t textureHandle);
+	    ID3D12GraphicsCommandList* commandList, UINT rootParamIndex, uint32_t textureHandle);
 
-  private:
+private:
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(const TextureManager&) = delete;
 	TextureManager& operator=(const TextureManager&) = delete;
+
+	// C++のbitsetが内部詳細にアクセスできないのでfindFirst用に自作
+	template<size_t kNumberOfBits> class Bitset {
+
+	public:
+		Bitset();
+		size_t FindFirst() const;
+		void Set(size_t bitIndex, bool value = true);
+		void Reset();
+		void Reset(size_t bitIndex);
+		bool Test(size_t bitIndex) const;
+
+	private:
+		uint64_t& GetWord(size_t bitIndex);
+
+	private:
+		static constexpr size_t kCountOfWord =
+		    (kNumberOfBits == 0 ? 1 : ((kNumberOfBits - 1) / (8 * sizeof(uint64_t)) + 1));
+		static constexpr size_t kBitsPerWord = 8 * sizeof(uint64_t);
+		static constexpr size_t kBitsPerWordMask = kBitsPerWord - 1;
+		static constexpr size_t kBitIndexToWordIndex = 6;
+
+		uint64_t words_[kCountOfWord];
+	};
 
 	// デバイス
 	ID3D12Device* device_;
@@ -82,14 +112,19 @@ class TextureManager {
 	std::string directoryPath_;
 	// デスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap_;
-	// 次に使うデスクリプタヒープの番号
-	uint32_t indexNextDescriptorHeap_ = 0u;
 	// テクスチャコンテナ
 	std::array<Texture, kNumDescriptors> textures_;
+	Bitset<kNumDescriptors> useTable_;
 
 	/// <summary>
 	/// 読み込み
 	/// </summary>
 	/// <param name="fileName">ファイル名</param>
 	uint32_t LoadInternal(const std::string& fileName);
+
+	/// <summary>
+	/// 読み込み解除
+	/// </summary>
+	/// <param name="textureHandle">テクスチャハンドル</param>
+	bool UnloadInternal(uint32_t textureHandle);
 };

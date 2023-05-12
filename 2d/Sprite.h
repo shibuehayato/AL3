@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 
+#include "Matrix4x4.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
-#include "Matrix4.h"
 #include <Windows.h>
 #include <d3d12.h>
 #include <string>
@@ -13,7 +13,7 @@
 /// スプライト
 /// </summary>
 class Sprite {
-  public:
+public:
 	enum class BlendMode {
 		kNone,     //!< ブレンドなし
 		kNormal,   //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
@@ -25,7 +25,7 @@ class Sprite {
 		kCountOfBlendMode, //!< ブレンドモード数。指定はしない
 	};
 
-  public: // サブクラス
+public: // サブクラス
 	/// <summary>
 	/// 頂点データ構造体
 	/// </summary>
@@ -39,10 +39,10 @@ class Sprite {
 	/// </summary>
 	struct ConstBufferData {
 		Vector4 color; // 色 (RGBA)
-		Matrix4 mat;   // ３Ｄ変換行列
+		Matrix4x4 mat;   // ３Ｄ変換行列
 	};
 
-  public: // 静的メンバ関数
+public: // 静的メンバ関数
 	/// <summary>
 	/// 静的初期化
 	/// </summary>
@@ -50,15 +50,15 @@ class Sprite {
 	/// <param name="window_width">画面幅</param>
 	/// <param name="window_height">画面高さ</param>
 	static void StaticInitialize(
-	  ID3D12Device* device, int window_width, int window_height,
-	  const std::wstring& directoryPath = L"Resources/");
+	    ID3D12Device* device, int window_width, int window_height,
+	    const std::wstring& directoryPath = L"Resources/");
 
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
 	/// <param name="cmdList">描画コマンドリスト</param>
 	static void
-	  PreDraw(ID3D12GraphicsCommandList* cmdList, BlendMode blendMode = BlendMode::kNormal);
+	    PreDraw(ID3D12GraphicsCommandList* cmdList, BlendMode blendMode = BlendMode::kNormal);
 
 	/// <summary>
 	/// 描画後処理
@@ -76,10 +76,10 @@ class Sprite {
 	/// <param name="isFlipY">上下反転</param>
 	/// <returns>生成されたスプライト</returns>
 	static Sprite* Create(
-	  uint32_t textureHandle, Vector2 position, Vector4 color = {1, 1, 1, 1},
-	  Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false);
+	    uint32_t textureHandle, Vector2 position, Vector4 color = {1, 1, 1, 1},
+	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false);
 
-  private: // 静的メンバ変数
+private: // 静的メンバ変数
 	// 頂点数
 	static const int kVertNum = 4;
 	// デバイス
@@ -92,12 +92,12 @@ class Sprite {
 	static Microsoft::WRL::ComPtr<ID3D12RootSignature> sRootSignature_;
 	// パイプラインステートオブジェクト
 	static std::array<
-	  Microsoft::WRL::ComPtr<ID3D12PipelineState>, size_t(BlendMode::kCountOfBlendMode)>
-	  sPipelineStates_;
+	    Microsoft::WRL::ComPtr<ID3D12PipelineState>, size_t(BlendMode::kCountOfBlendMode)>
+	    sPipelineStates_;
 	// 射影行列
-	static Matrix4 sMatProjection_;
+	static Matrix4x4 sMatProjection_;
 
-  public: // メンバ関数
+public: // メンバ関数
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -106,8 +106,8 @@ class Sprite {
 	/// コンストラクタ
 	/// </summary>
 	Sprite(
-	  uint32_t textureHandle, Vector2 position, Vector2 size,
-	  Vector4 color, Vector2 anchorpoint, bool isFlipX, bool isFlipY);
+	    uint32_t textureHandle, Vector2 position, Vector2 size, Vector4 color, Vector2 anchorpoint,
+	    bool isFlipX, bool isFlipY);
 
 	/// <summary>
 	/// 初期化
@@ -121,7 +121,7 @@ class Sprite {
 	/// <param name="textureHandle">テクスチャハンドル</param>
 	void SetTextureHandle(uint32_t textureHandle);
 
-	uint32_t GetTextureHandle() { return textureHandle_; }
+	uint32_t GetTextureHandle() const { return textureHandle_; }
 
 	/// <summary>
 	/// 座標の設定
@@ -129,7 +129,7 @@ class Sprite {
 	/// <param name="position">座標</param>
 	void SetPosition(const Vector2& position);
 
-	const Vector2& GetPosition() { return position_; }
+	const Vector2& GetPosition() const { return position_; }
 
 	/// <summary>
 	/// 角度の設定
@@ -137,7 +137,7 @@ class Sprite {
 	/// <param name="rotation">角度</param>
 	void SetRotation(float rotation);
 
-	float GetRotation() { return rotation_; }
+	float GetRotation() const { return rotation_; }
 
 	/// <summary>
 	/// サイズの設定
@@ -145,7 +145,7 @@ class Sprite {
 	/// <param name="size">サイズ</param>
 	void SetSize(const Vector2& size);
 
-	const Vector2& GetSize() { return size_; }
+	const Vector2& GetSize() const { return size_; }
 
 	/// <summary>
 	/// アンカーポイントの設定
@@ -153,7 +153,7 @@ class Sprite {
 	/// <param name="anchorpoint">アンカーポイント</param>
 	void SetAnchorPoint(const Vector2& anchorpoint);
 
-	const Vector2& GetAnchorPoint() { return anchorPoint_; }
+	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
 
 	/// <summary>
 	/// 色の設定
@@ -161,7 +161,7 @@ class Sprite {
 	/// <param name="color">色</param>
 	void SetColor(const Vector4& color) { color_ = color; };
 
-	const Vector4& GetColor() { return color_; }
+	const Vector4& GetColor() const { return color_; }
 
 	/// <summary>
 	/// 左右反転の設定
@@ -169,7 +169,7 @@ class Sprite {
 	/// <param name="isFlipX">左右反転</param>
 	void SetIsFlipX(bool isFlipX);
 
-	bool GetIsFlipX() { return isFlipX_; }
+	bool GetIsFlipX() const { return isFlipX_; }
 
 	/// <summary>
 	/// 上下反転の設定
@@ -177,7 +177,7 @@ class Sprite {
 	/// <param name="isFlipX">上下反転</param>
 	void SetIsFlipY(bool isFlipY);
 
-	bool GetIsFlipY() { return isFlipY_; }
+	bool GetIsFlipY() const { return isFlipY_; }
 
 	/// <summary>
 	/// テクスチャ範囲設定
@@ -191,7 +191,7 @@ class Sprite {
 	/// </summary>
 	void Draw();
 
-  private: // メンバ変数
+private: // メンバ変数
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
 	// 定数バッファ
@@ -213,7 +213,7 @@ class Sprite {
 	// アンカーポイント
 	Vector2 anchorPoint_ = {0, 0};
 	// ワールド行列
-	Matrix4 matWorld_{};
+	Matrix4x4 matWorld_{};
 	// 色
 	Vector4 color_ = {1, 1, 1, 1};
 	// 左右反転
@@ -227,7 +227,7 @@ class Sprite {
 	// リソース設定
 	D3D12_RESOURCE_DESC resourceDesc_;
 
-  private: // メンバ関数
+private: // メンバ関数
 	/// <summary>
 	/// 頂点データ転送
 	/// </summary>

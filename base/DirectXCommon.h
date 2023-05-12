@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include <Windows.h>
+#include <chrono>
 #include <cstdlib>
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -13,20 +14,19 @@
 /// DirectX汎用
 /// </summary>
 class DirectXCommon {
-  public: // メンバ関数
-
+public: // メンバ関数
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
 	static DirectXCommon* GetInstance();
-		  
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize(
-	  WinApp* win, int32_t backBufferWidth = WinApp::kWindowWidth,
-	  int32_t backBufferHeight = WinApp::kWindowHeight);
+	    WinApp* win, int32_t backBufferWidth = WinApp::kWindowWidth,
+	    int32_t backBufferHeight = WinApp::kWindowHeight);
 
 	/// <summary>
 	/// 描画前処理
@@ -52,13 +52,13 @@ class DirectXCommon {
 	/// デバイスの取得
 	/// </summary>
 	/// <returns>デバイス</returns>
-	ID3D12Device* GetDevice() { return device_.Get(); }
+	ID3D12Device* GetDevice() const { return device_.Get(); }
 
 	/// <summary>
 	/// 描画コマンドリストの取得
 	/// </summary>
 	/// <returns>描画コマンドリスト</returns>
-	ID3D12GraphicsCommandList* GetCommandList() { return commandList_.Get(); }
+	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
 	/// <summary>
 	/// バックバッファの幅取得
@@ -72,7 +72,10 @@ class DirectXCommon {
 	/// <returns>バックバッファの高さ</returns>
 	int32_t GetBackBufferHeight() const;
 
-  private: // メンバ変数
+	// バックバッファの数を取得
+	size_t GetBackBufferCount() const { return backBuffers_.size(); }
+
+private: // メンバ変数
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_;
 
@@ -91,13 +94,16 @@ class DirectXCommon {
 	UINT64 fenceVal_ = 0;
 	int32_t backBufferWidth_ = 0;
 	int32_t backBufferHeight_ = 0;
+	HANDLE frameLatencyWaitableObject_;
+	std::chrono::steady_clock::time_point reference_;
+	int32_t refreshRate_ = 0;
 
-  private: // メンバ関数
+private: // メンバ関数
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 	DirectXCommon(const DirectXCommon&) = delete;
 	const DirectXCommon& operator=(const DirectXCommon&) = delete;
-		   
+
 	/// <summary>
 	/// DXGIデバイス初期化
 	/// </summary>

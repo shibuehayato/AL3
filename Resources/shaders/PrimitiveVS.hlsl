@@ -2,7 +2,7 @@
 
 VSOutput main(float4 pos : POSITION, float4 color : COLOR) {
 	VSOutput output; // ピクセルシェーダーに渡す値
-	output.svpos = mul(mul(projection, view), pos);
+	output.svpos = mul(pos, mul(view, projection));
 	output.color = color;
 
 	return output;

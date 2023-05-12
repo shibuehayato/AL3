@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Input.h"
 #include "ViewProjection.h"
 
@@ -6,8 +6,10 @@
 /// デバッグ用カメラ
 /// </summary>
 class DebugCamera {
+	// カメラ注視点までの距離
+	static const float distance_;
 
-  public:
+public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -18,26 +20,33 @@ class DebugCamera {
 	// 更新
 	void Update();
 
-	void SetDistance(float distance) { distance_ = distance; }
-
 	/// <summary>
 	/// ビュープロジェクションを取得
 	/// </summary>
 	/// <returns>ビュープロジェクション</returns>
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
-  private:
+	/// <summary>
+	/// プロジェクション行列計算用のメンバ設定関数群
+	/// </summary>
+	void SetFovAngleY(float value) { viewProjection_.fovAngleY = value; }
+	void SetAspectRatio(float value) { viewProjection_.aspectRatio = value; }
+	void SetNearZ(float value) { viewProjection_.nearZ = value; }
+	void SetFarZ(float value) { viewProjection_.farZ = value; }
+
+private:
 	// 入力クラスのポインタ
 	Input* input_;
-	// カメラ注視点までの距離
-	float distance_ = 50;
 	// スケーリング
 	float scaleX_ = 1.0f;
 	float scaleY_ = 1.0f;
-	// 回転行列
-	Matrix4 matRot = MathUtility::Matrix4Identity();
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
+	// 回転行列
+	Matrix4x4 matRot_;
 
-	void MultiplyMatrix(const Matrix4& matrix);
+	/// <summary>
+	/// 行列更新
+	/// </summary>
+	void UpdateMatrix();
 };

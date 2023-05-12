@@ -1,10 +1,10 @@
-﻿#pragma once
+#pragma once
 
+#include "LightGroup.h"
+#include "Mesh.h"
 #include "TextureManager.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "Mesh.h"
-#include "LightGroup.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -13,11 +13,11 @@
 /// モデルデータ
 /// </summary>
 class Model {
-  private: // エイリアス
+private: // エイリアス
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-  public: // 列挙子
+public: // 列挙子
 	/// <summary>
 	/// ルートパラメータ番号
 	/// </summary>
@@ -29,11 +29,11 @@ class Model {
 		kLight,          // ライト
 	};
 
-  private:
+private:
 	static const std::string kBaseDirectory;
 	static const std::string kDefaultModelName;
 
-  private: // 静的メンバ変数
+private: // 静的メンバ変数
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
 	// コマンドリスト
@@ -45,7 +45,7 @@ class Model {
 	// ライト
 	static std::unique_ptr<LightGroup> lightGroup;
 
-  public: // 静的メンバ関数
+public: // 静的メンバ関数
 	/// <summary>
 	/// 静的初期化
 	/// </summary>
@@ -56,7 +56,7 @@ class Model {
 	/// </summary>
 	static void InitializeGraphicsPipeline();
 
-			/// <summary>
+	/// <summary>
 	/// 3Dモデル生成
 	/// </summary>
 	/// <returns></returns>
@@ -70,7 +70,7 @@ class Model {
 	/// <returns>生成されたモデル</returns>
 	static Model* CreateFromOBJ(const std::string& modelname, bool smoothing = false);
 
-		/// <summary>
+	/// <summary>
 	/// 描画前処理
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
@@ -81,7 +81,7 @@ class Model {
 	/// </summary>
 	static void PostDraw();
 
-  public: // メンバ関数
+public: // メンバ関数
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
@@ -99,8 +99,7 @@ class Model {
 	/// </summary>
 	/// <param name="worldTransform">ワールドトランスフォーム</param>
 	/// <param name="viewProjection">ビュープロジェクション</param>
-	void Draw(
-	  const WorldTransform& worldTransform, const ViewProjection& viewProjection);
+	void Draw(const WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 描画（テクスチャ差し替え）
@@ -109,8 +108,8 @@ class Model {
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	/// <param name="textureHadle">テクスチャハンドル</param>
 	void Draw(
-	  const WorldTransform& worldTransform, const ViewProjection& viewProjection,
-	  uint32_t textureHadle);
+	    const WorldTransform& worldTransform, const ViewProjection& viewProjection,
+	    uint32_t textureHadle);
 
 	/// <summary>
 	/// メッシュコンテナを取得
@@ -118,7 +117,7 @@ class Model {
 	/// <returns>メッシュコンテナ</returns>
 	inline const std::vector<Mesh*>& GetMeshes() { return meshes_; }
 
-  private: // メンバ変数
+private: // メンバ変数
 	// 名前
 	std::string name_;
 	// メッシュコンテナ
@@ -128,7 +127,7 @@ class Model {
 	// デフォルトマテリアル
 	Material* defaultMaterial_ = nullptr;
 
-  private: // メンバ関数
+private: // メンバ関数
 	/// <summary>
 	/// モデル読み込み
 	/// </summary>

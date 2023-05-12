@@ -1,25 +1,24 @@
-﻿#pragma once
+#pragma once
 
-#include <Windows.h>
-#include <wrl.h>
-#include <d3d12.h>
 #include "Vector2.h"
 #include "Vector3.h"
+#include <Windows.h>
+#include <d3d12.h>
 #include <d3dx12.h>
+#include <wrl.h>
 
+#include "CircleShadow.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
-#include "CircleShadow.h"
 
 /// <summary>
 /// ライト
 /// </summary>
-class LightGroup
-{
+class LightGroup {
 private: // エイリアス
 	// Microsoft::WRL::を省略
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public: // 定数
 	// 平行光源の数
@@ -32,10 +31,8 @@ public: // 定数
 	static const int kCircleShadowNum = 1;
 
 public: // サブクラス
-
 	// 定数バッファ用データ構造体
-	struct ConstBufferData
-	{
+	struct ConstBufferData {
 		// 環境光の色
 		Vector3 ambientColor;
 		float pad1;
@@ -66,7 +63,7 @@ public: // メンバ関数
 	/// 更新
 	/// </summary>
 	void Update();
-	
+
 	/// <summary>
 	/// 描画
 	/// </summary>
@@ -228,7 +225,7 @@ private: // メンバ変数
 	ConstBufferData* constMap_ = nullptr;
 
 	// 環境光の色
-	Vector3 ambientColor_ = { 1,1,1 };
+	Vector3 ambientColor_ = {1, 1, 1};
 
 	// 平行光源の配列
 	DirectionalLight dirLights_[kDirLightNum];
@@ -245,4 +242,3 @@ private: // メンバ変数
 	// ダーティフラグ
 	bool dirty_ = false;
 };
-

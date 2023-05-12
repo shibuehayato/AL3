@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Material.h"
 #include "Vector2.h"
@@ -14,11 +14,11 @@
 /// 形状データ
 /// </summary>
 class Mesh {
-  private: // エイリアス
+private: // エイリアス
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-  public: // サブクラス
+public: // サブクラス
 	// 頂点データ構造体（テクスチャあり）
 	struct VertexPosNormalUv {
 		Vector3 pos;    // xyz座標
@@ -26,12 +26,12 @@ class Mesh {
 		Vector2 uv;     // uv座標
 	};
 
-  public: // メンバ関数
+public: // メンバ関数
 	/// <summary>
 	/// 名前を取得
 	/// </summary>
 	/// <returns>名前</returns>
-	const std::string& GetName() { return name_; }
+	const std::string& GetName() const { return name_; }
 
 	/// <summary>
 	/// 名前をセット
@@ -55,7 +55,7 @@ class Mesh {
 	/// 頂点データの数を取得
 	/// </summary>
 	/// <returns>頂点データの数</returns>
-	inline size_t GetVertexCount() { return vertices_.size(); }
+	inline size_t GetVertexCount() const { return vertices_.size(); }
 
 	/// <summary>
 	/// エッジ平滑化データの追加
@@ -73,7 +73,7 @@ class Mesh {
 	/// マテリアルの取得
 	/// </summary>
 	/// <returns>マテリアル</returns>
-	Material* GetMaterial() { return material_; }
+	Material* GetMaterial() const { return material_; }
 
 	/// <summary>
 	/// マテリアルの割り当て
@@ -90,13 +90,13 @@ class Mesh {
 	/// 頂点バッファ取得
 	/// </summary>
 	/// <returns>頂点バッファ</returns>
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBView() { return vbView_; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBView() const { return vbView_; }
 
 	/// <summary>
 	/// インデックスバッファ取得
 	/// </summary>
 	/// <returns>インデックスバッファ</returns>
-	const D3D12_INDEX_BUFFER_VIEW& GetIBView() { return ibView_; }
+	const D3D12_INDEX_BUFFER_VIEW& GetIBView() const { return ibView_; }
 
 	/// <summary>
 	/// 描画
@@ -105,8 +105,8 @@ class Mesh {
 	/// <param name="rooParameterIndexMaterial">マテリアルのルートパラメータ番号</param>
 	/// <param name="rooParameterIndexTexture">テクスチャのルートパラメータ番号</param>
 	void Draw(
-	  ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-	  UINT rooParameterIndexTexture);
+	    ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
+	    UINT rooParameterIndexTexture);
 
 	/// <summary>
 	/// 描画（テクスチャ差し替え版）
@@ -116,8 +116,8 @@ class Mesh {
 	/// <param name="rooParameterIndexTexture">テクスチャのルートパラメータ番号</param>
 	/// <param name="textureHandle">差し替えるテクスチャハンドル</param>
 	void Draw(
-	  ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
-	  UINT rooParameterIndexTexture, uint32_t textureHandle);
+	    ID3D12GraphicsCommandList* commandList, UINT rooParameterIndexMaterial,
+	    UINT rooParameterIndexTexture, uint32_t textureHandle);
 
 	/// <summary>
 	/// 頂点配列を取得
@@ -131,7 +131,7 @@ class Mesh {
 	/// <returns>インデックス配列</returns>
 	inline const std::vector<unsigned short>& GetIndices() { return indices_; }
 
-  private: // メンバ変数
+private: // メンバ変数
 	// 名前
 	std::string name_;
 	// 頂点バッファ

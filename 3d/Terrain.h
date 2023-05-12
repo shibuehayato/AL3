@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Vector2.h"
 #include "Vector3.h"
@@ -12,11 +12,11 @@
 /// 地形
 /// </summary>
 class Terrain {
-  private: // エイリアス
+private: // エイリアス
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-  public: // サブクラス
+public: // サブクラス
 	// 頂点データ構造体（テクスチャあり）
 	struct VertexPosNormalUv {
 		Vector3 pos;    // xyz座標
@@ -24,7 +24,7 @@ class Terrain {
 		Vector2 uv;     // uv座標
 	};
 
-  public:
+public:
 	// デフォルト横方向頂点数
 	static const uint32_t kDefaultVertexCountHorizontal;
 	// デフォルト高さ
@@ -38,10 +38,10 @@ class Terrain {
 	/// 初期化
 	/// </summary>
 	void Initialize(
-	  float modelWidth = kDefaultModelWidth, float modelDepth = kDefaultModelWidth,
-	  float modelHeight = kDefaultHeight,
-	  uint32_t vertexCountHorizontal = kDefaultVertexCountHorizontal,
-	  uint32_t vertexCountVertical = kDefaultVertexCountHorizontal);
+	    float modelWidth = kDefaultModelWidth, float modelDepth = kDefaultModelWidth,
+	    float modelHeight = kDefaultHeight,
+	    uint32_t vertexCountHorizontal = kDefaultVertexCountHorizontal,
+	    uint32_t vertexCountVertical = kDefaultVertexCountHorizontal);
 
 	/// <summary>
 	/// 描画
@@ -50,8 +50,8 @@ class Terrain {
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	/// <param name="textureHadle">テクスチャハンドル</param>
 	void Draw(
-	  const WorldTransform& worldTransform, const ViewProjection& viewProjection,
-	  uint32_t textureHadle);
+	    const WorldTransform& worldTransform, const ViewProjection& viewProjection,
+	    uint32_t textureHadle);
 
 	/// <summary>
 	/// 2Dパーリンノイズによる地形変動
@@ -65,7 +65,7 @@ class Terrain {
 	/// <returns>頂点配列（前後×左右の二次元配列）</returns>
 	const std::vector<std::vector<VertexPosNormalUv>>& GetVertices() const { return vertices_; }
 
-  private:
+private:
 	// 横方向頂点数
 	uint32_t vertexCountHorizontal_ = kDefaultVertexCountHorizontal;
 	// 縦方向頂点数

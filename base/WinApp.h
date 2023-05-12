@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Windows.h>
 #include <cstdint>
 
@@ -6,7 +6,7 @@
 /// ウィンドウズアプリケーション
 /// </summary>
 class WinApp {
-  public: // 静的メンバ変数
+public: // 静的メンバ変数
 	// ウィンドウサイズ
 	static const int kWindowWidth = 1280; // 横幅
 	static const int kWindowHeight = 720; // 縦幅
@@ -19,7 +19,7 @@ class WinApp {
 		kFixedAspect, //!< アスペクト比一定
 	};
 
-  public: // 静的メンバ関数
+public: // 静的メンバ関数
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
@@ -36,7 +36,7 @@ class WinApp {
 	/// <returns>成否</returns>
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-  public: // メンバ関数
+public: // メンバ関数
 	/// <summary>
 	/// ゲームウィンドウの作成
 	/// <param name="title">ウィンドウタイトル</param>
@@ -45,8 +45,8 @@ class WinApp {
 	/// <param name="clientHeight">ウィンドウのクライアント領域の初期高さ</param>
 	/// </summary>
 	void CreateGameWindow(
-	  const char* title = "DirectXGame", UINT windowStyle = WS_OVERLAPPEDWINDOW,
-	  int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
+	    const wchar_t* title = L"DirectXGame", UINT windowStyle = WS_OVERLAPPEDWINDOW,
+	    int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
 
 	/// <summary>
 	/// ゲームウィンドウの破棄
@@ -91,12 +91,13 @@ class WinApp {
 	/// <returns></returns>
 	SizeChangeMode GetSizeChangeMode() const;
 
-  private: // メンバ関数
+private: // メンバ関数
 	WinApp() = default;
 	~WinApp() = default;
 	WinApp(const WinApp&) = delete;
 	const WinApp& operator=(const WinApp&) = delete;
-  private: // メンバ変数
+
+private: // メンバ変数
 	// Window関連
 	HWND hwnd_ = nullptr;   // ウィンドウハンドル
 	WNDCLASSEX wndClass_{}; // ウィンドウクラス

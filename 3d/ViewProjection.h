@@ -1,14 +1,15 @@
-﻿#pragma once
+#pragma once
 
-#include "MathUtility.h"
+#include "Matrix4x4.h"
+#include "Vector3.h"
 #include <d3d12.h>
 #include <wrl.h>
 
 // 定数バッファ用データ構造体
 struct ConstBufferDataViewProjection {
-	Matrix4 view;       // ワールド → ビュー変換行列
-	Matrix4 projection; // ビュー → プロジェクション変換行列
-	Vector3 cameraPos;  // カメラ座標（ワールド座標）
+	Matrix4x4 view;       // ワールド → ビュー変換行列
+	Matrix4x4 projection; // ビュー → プロジェクション変換行列
+	Vector3 cameraPos;    // カメラ座標（ワールド座標）
 };
 
 /// <summary>
@@ -21,17 +22,15 @@ struct ViewProjection {
 	ConstBufferDataViewProjection* constMap = nullptr;
 
 #pragma region ビュー行列の設定
-	// 視点座標
-	Vector3 eye = {0, 0, -50.0f};
-	// 注視点座標
-	Vector3 target = {0, 0, 0};
-	// 上方向ベクトル
-	Vector3 up = {0, 1, 0};
+	// X,Y,Z軸回りのローカル回転角
+	Vector3 rotation_ = {0, 0, 0};
+	// ローカル座標
+	Vector3 translation_ = {0, 0, -50};
 #pragma endregion
 
 #pragma region 射影行列の設定
 	// 垂直方向視野角
-	float fovAngleY = 45.0f * MathUtility::PI / 180.0f;
+	float fovAngleY = 45.0f * 3.141592654f / 180.0f;
 	// ビューポートのアスペクト比
 	float aspectRatio = (float)16 / 9;
 	// 深度限界（手前側）
@@ -41,9 +40,9 @@ struct ViewProjection {
 #pragma endregion
 
 	// ビュー行列
-	Matrix4 matView;
+	Matrix4x4 matView;
 	// 射影行列
-	Matrix4 matProjection;
+	Matrix4x4 matProjection;
 
 	/// <summary>
 	/// 初期化
@@ -65,4 +64,12 @@ struct ViewProjection {
 	/// 行列を転送する
 	/// </summary>
 	void TransferMatrix();
+	/// <summary>
+	/// ビュー行列を更新する
+	/// </summary>
+	void UpdateViewMatrix();
+	/// <summary>
+	/// 射影行列を更新する
+	/// </summary>
+	void UpdateProjectionMatrix();
 };

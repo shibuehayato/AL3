@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <d3d12.h>
 #include <memory>
@@ -8,11 +8,11 @@
 /// 地形共用部
 /// </summary>
 class TerrainCommon {
-  private: // エイリアス
+private: // エイリアス
 	// Microsoft::WRL::を省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-  public: // サブクラス
+public: // サブクラス
 	// パイプラインセット
 	struct PipelineSet {
 		// ルートシグネチャ
@@ -30,7 +30,7 @@ class TerrainCommon {
 		kTexture,        // テクスチャ
 	};
 
-  public:
+public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -46,7 +46,7 @@ class TerrainCommon {
 	/// </summary>
 	void PreDraw();
 
-  private:
+private:
 	// パイプラインセット
 	PipelineSet pipelineSet_;
 };

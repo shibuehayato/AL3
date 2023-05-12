@@ -1,3 +1,5 @@
+#pragma pack_matrix(row_major)
+
 cbuffer ViewProjection : register(b0) {
 	matrix view;       // ビュー変換行列
 	matrix projection; // プロジェクション変換行列

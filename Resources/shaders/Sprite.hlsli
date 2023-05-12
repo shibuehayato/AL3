@@ -1,3 +1,5 @@
+#pragma pack_matrix(row_major)
+
 cbuffer cbuff0 : register(b0) {
 	float4 color; // 色(RGBA)
 	matrix mat;   // ３Ｄ変換行列
