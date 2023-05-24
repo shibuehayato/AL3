@@ -5,7 +5,7 @@
 
 Vector3 Add(Vector3 v1, Vector3 v2) {
 	Vector3 num;
-
+	
 	float a[3] = {v1.x, v1.y, v1.z};
 	float b[3] = {v2.x, v2.y, v2.z};
 
