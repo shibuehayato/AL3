@@ -22,10 +22,10 @@ void Enemy::Update()
 { 
 	worldTransform_.UpdateMatrix();
 	
-	// キャラクターの移動ベクトル
+	// 敵の移動ベクトル
 	Vector3 move = {0, 0, 0};
 
-	// キャラクターの移動速さ
+	// 敵の移動の速さ
 	const float kCharacterSpeed = 0.2f;
 
 	move.z -= kCharacterSpeed;
