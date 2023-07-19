@@ -23,7 +23,7 @@ public:
 
 	void Initialize(Model* model, const Vector3& position);
 	void Update();
-	void Draw(const ViewProjection& viewProjection);
+	void Draw(ViewProjection viewProjection);
 
 	// 敵の攻撃処理
 	void Fire();

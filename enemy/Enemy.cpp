@@ -42,16 +42,6 @@ void (Enemy::*Enemy::spPhaseTable[])() = {
 
 void Enemy::Approach()
 {
-	// 発射タイマーカウントダウン
-	--fireTimer;
-	// 指定時間に達した
-	if (fireTimer <= 0) {
-	// 弾を発射
-		Fire();
-		// 発射タイマーを初期化
-		fireTimer = kFireInterval;
-	}
-
 	move_.z -= kCharacterSpeed_;
 
 		if (worldTransform_.translation_.z < 0.0f) {
@@ -87,7 +77,17 @@ void Enemy::Update()
 	//	move.y += kCharacterSpeed;
 	//	break;
 	//}
-	
+	    
+	// 発射タイマーカウントダウン
+	    --fireTimer;
+	    // 指定時間に達した
+	    if (fireTimer <= 0) {
+		// 弾を発射
+		Fire();
+		// 発射タイマーを初期化
+		fireTimer = kFireInterval;
+	    }
+
 	// デスフラグの立った弾を削除
 	    bullets_.remove_if([](EnemyBullet* bullet) {
 		    if (bullet->IsDead()) {
@@ -117,7 +117,7 @@ void Enemy::Fire()
 	// 弾を発生し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
-
+	
 	// 弾を登録
 	bullets_.push_back(newBullet);
 }
@@ -128,12 +128,12 @@ void Enemy::ApproachInitialize()
 	fireTimer = kFireInterval;
 }
 
-void Enemy::Draw(const ViewProjection& viewProjection) 
+void Enemy::Draw(ViewProjection viewProjection) 
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	// 弾描画
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
+    for (EnemyBullet* bullet : bullets_) {
+    		bullet->Draw(viewProjection);
+    	}
 }
