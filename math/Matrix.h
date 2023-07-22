@@ -6,6 +6,8 @@
 
 Vector3 Add(Vector3 v1, Vector3 v2);
 
+Vector3 Sub(Vector3 v1, Vector3 v2);
+
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 
 Matrix4x4 MakeRotateXMatrix(float radian);
@@ -28,3 +30,6 @@ Vector3 VectorAdd(const Vector3& translation, const Vector3& move);
 
 // ベクトル変換
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
+
+// 正規化
+Vector3 Normalize(const Vector3 v1);

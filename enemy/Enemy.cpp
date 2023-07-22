@@ -1,5 +1,6 @@
 ﻿#include "Enemy.h"
 #include "Matrix.h"
+#include "Player.h"
 #include <cassert>
 
 Enemy::Enemy() {}
@@ -108,11 +109,31 @@ void Enemy::Update()
 	worldTransform_.UpdateMatrix();
 }
 
+Vector3 Enemy::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得 (ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	
+	return worldPos;
+}
+
 void Enemy::Fire()
 {
+	assert(player_);
+	
 	// 弾の速度
-	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
+	const float kBulletSpeed = 1.0f;
+
+	Vector3 playerPosition = player_->GetWorldPosition();
+	Vector3 enemyPosition = this->GetWorldPosition();
+	Vector3 velocity = Sub(playerPosition,enemyPosition);
+	velocity = Normalize(velocity);
+	velocity.x *= kBulletSpeed;
+	velocity.y *= kBulletSpeed;
+	velocity.z *= kBulletSpeed;
 
 	// 弾を発生し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();

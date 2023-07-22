@@ -3,6 +3,9 @@
 #include "EnemyBullet.h"
 #include <list>
 
+// 自機クラスの前方宣言
+class Player;
+
 enum class Phase {
 	approach, // 接近する
 	leave,    // 離脱する
@@ -31,6 +34,11 @@ public:
 	// 発射間隔
 	static const int kFireInterval = 60;
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
 private:
 	// メンバ関数ポインタのテーブル
 	static void (Enemy::*spPhaseTable[])();
@@ -41,6 +49,9 @@ private:
 	Vector3 move_;
 	float kCharacterSpeed_;
 	Phase phase_ = Phase::approach;
+	
+	// 自キャラ
+	Player* player_ = nullptr;
 	
 	// 弾
 	EnemyBullet* bullet_ = nullptr;

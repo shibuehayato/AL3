@@ -16,6 +16,19 @@ Vector3 Add(Vector3 v1, Vector3 v2) {
 	return num;
 }
 
+Vector3 Sub(Vector3 v1, Vector3 v2) {
+	Vector3 num;
+
+	float a[3] = {v1.x, v1.y, v1.z};
+	float b[3] = {v2.x, v2.y, v2.z};
+
+	num.x = a[0] - b[0];
+	num.y = a[1] - b[1];
+	num.z = a[2] - b[2];
+
+	return num;
+}
+
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 
@@ -224,4 +237,27 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	    v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2],};
 
 	return result;
+}
+
+Vector3 Normalize(const Vector3 v1)
+{ 
+	Vector3 num;
+	float length = sqrtf(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
+
+	float newX = v1.x;
+	float newY = v1.y;
+	float newZ = v1.z;
+
+	if (length != 0.0f)
+	{
+		newX = v1.x / length;
+		newY = v1.y / length;
+		newZ = v1.z / length;
+	}
+
+	num.x = newX;
+	num.y = newY;
+	num.z = newZ;
+
+	return num;
 }
