@@ -57,6 +57,8 @@ void GameScene::Update() {
 	// 敵キャラの更新
 	enemy_->Update();
 
+	CheckAllCollisions();
+
 	// デバッグカメラの更新
 	debugCamera_->Update();
 
@@ -126,4 +128,89 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllCollisions()
+{
+	float enemyBulletRadius = 0.5f;
+	float playerRadius = 1.0f;
+	float playerBulletRadius = 0.5f;
+	float enemyRadius = 1.0f;
+
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	// 自弾リストの取得
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	// 敵弾リストの取得
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+	#pragma region 自キャラと敵弾の当たり判定
+	// 自キャラの座標
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (EnemyBullet* bullet : enemyBullets) {
+	        // 敵弾の座標
+		    posB = bullet->GetWorldPosition();
+
+			// 座標AとBの距離を求める
+			Vector3 Distance = {
+		        (posA.x - posB.x) * (posA.x - posB.x),
+		        (posA.y - posB.y) * (posA.y - posB.y),
+		        (posA.z - posB.z) * (posA.z - posB.z)
+			};
+			
+			if (Distance.x + Distance.y + Distance.z <=
+		        (playerRadius + enemyBulletRadius) * (playerRadius + enemyBulletRadius)) {
+		        // 自キャラの衝突時コールバック関数を呼び出す
+			    player_->OnCollision();
+				// 敵弾の衝突時コールバック関数を呼び出す
+			    bullet->OnCollision();
+			}
+	}
+	#pragma endregion
+
+	#pragma region 自弾と敵キャラの当たり判定
+	posA = enemy_->GetWorldPosition();
+
+	for (PlayerBullet* bullet : playerBullets) {
+		    posB = bullet->GetWorldPosition();
+
+			Vector3 Distance = {
+		        (posA.x - posB.x) * (posA.x - posB.x), 
+				(posA.y - posB.y) * (posA.y - posB.y),
+		        (posA.z - posB.z) * (posA.z - posB.z)
+			};
+
+			if (Distance.x + Distance.y + Distance.z <= 
+				(enemyRadius + playerBulletRadius) * (enemyRadius + playerBulletRadius)) {
+			    enemy_->OnCollision();
+			    bullet->OnCollision();
+			}
+	}
+	#pragma endregion
+	
+	#pragma region 自弾と敵弾の当たり判定
+	for (PlayerBullet* pBullet : playerBullets) {
+		    posA = pBullet->GetWorldPosition();
+
+			for (EnemyBullet* eBullet : enemyBullets) {
+			    posB = eBullet->GetWorldPosition();
+
+				Vector3 Distance = {
+			        (posA.x - posB.x) * (posA.x - posB.x), 
+					(posA.y - posB.y) * (posA.y - posB.y),
+			        (posA.z - posB.z) * (posA.z - posB.z)
+				};
+
+				if (Distance.x + Distance.y + Distance.z <=
+			        (playerBulletRadius + enemyBulletRadius) *
+			            (playerBulletRadius + enemyBulletRadius)) {
+				    pBullet->OnCollision();
+				    eBullet->OnCollision();
+				}
+			}
+	}
+	#pragma endregion
 }

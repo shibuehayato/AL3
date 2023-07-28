@@ -67,7 +67,7 @@ void Player::Update() {
 	ImGui::SliderFloat3("SliderFloat3", moves, 0.0f, 2.0f);
 	ImGui::Text("DebugCamera SPACE");
 	ImGui::End();
-
+	
 	move.x = moves[0] - 1;
 	move.y = moves[1] - 1;
 	move.z = moves[2] - 1;
@@ -147,6 +147,8 @@ Vector3 Player::GetWorldPosition()
 	
 	return worldPos;
 }
+
+void Player::OnCollision(){}
 
 void Player::Draw(ViewProjection viewProjection) { 
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);

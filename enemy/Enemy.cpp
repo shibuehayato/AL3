@@ -149,6 +149,8 @@ void Enemy::ApproachInitialize()
 	fireTimer = kFireInterval;
 }
 
+void Enemy::OnCollision(){}
+
 void Enemy::Draw(ViewProjection viewProjection) 
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
