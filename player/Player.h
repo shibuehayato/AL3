@@ -11,7 +11,7 @@ public:
 
 	~Player();
 
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 pos);
 
 	void Update();
 
@@ -20,6 +20,12 @@ public:
 	void Rotate();
 
 	void Attack();
+
+	/// <summary>
+	/// 親となるワールドトランスフォームをセット
+	/// </summary>
+	/// <param name="parent">親となるワールドトランスフォーム</param>
+	void SetParnet(const WorldTransform* parent);
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();

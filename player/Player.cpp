@@ -12,7 +12,7 @@ Player::~Player() {
 	}
 }
 
-void Player::Initialize(Model *model,uint32_t textureHandle) {
+void Player::Initialize(Model *model,uint32_t textureHandle, Vector3 pos) {
 
 	assert(model);
 
@@ -24,6 +24,7 @@ void Player::Initialize(Model *model,uint32_t textureHandle) {
 
 	// シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
+	worldTransform_.translation_ = Add(worldTransform_.translation_, pos);
 }
 
 void Player::Update() {
@@ -59,18 +60,22 @@ void Player::Update() {
 		move.y -= kCharacterSpeed;
 	}
 
-	float moves[3] = {move.x + 1, move.y + 1, move.z + 1};
+	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move);
+
+	float moves[3] = {
+		worldTransform_.translation_.x, worldTransform_.translation_.y,
+	worldTransform_.translation_.z};
 
 	// キャラクターの座標を画面表示する処理
 	ImGui::Begin("Player");
 	ImGui::InputFloat3("InputFloat3", moves);
-	ImGui::SliderFloat3("SliderFloat3", moves, 0.0f, 2.0f);
-	ImGui::Text("DebugCamera SPACE");
+	ImGui::SliderFloat3("SliderFloat3", moves, 10.0f, 30.0f);
+	ImGui::Text("DebugCamera ENTER");
 	ImGui::End();
 	
-	move.x = moves[0] - 1;
-	move.y = moves[1] - 1;
-	move.z = moves[2] - 1;
+	worldTransform_.translation_.x = moves[0];
+	worldTransform_.translation_.y = moves[1];
+	worldTransform_.translation_.z = moves[2];
 
 	// 旋回処理
 	Rotate();
@@ -84,24 +89,15 @@ void Player::Update() {
 	}
 
 	// 移動限界座標
-	const float kMoveLimitX = 33;
-	const float kMoveLimitY = 18;
+	const float kMoveLimitX = 20;
+	const float kMoveLimitY = 10;
 	// 範囲を超えない処理
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
-	// 座標移動 (ベクトルの加算)
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-
-	// アフィン変換行列
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransform_.UpdateMatrix();
 }
 
 void Player::Rotate()
@@ -129,7 +125,7 @@ void Player::Attack() {
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
 		// 弾を登録
 		bullets_.push_back(newBullet);
@@ -149,6 +145,12 @@ Vector3 Player::GetWorldPosition()
 }
 
 void Player::OnCollision(){}
+
+void Player::SetParnet(const WorldTransform* parent)
+{ 
+	// 親関係を結ぶ
+	worldTransform_.parent_ = parent; 
+}
 
 void Player::Draw(ViewProjection viewProjection) { 
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
