@@ -6,6 +6,9 @@
 // 自機クラスの前方宣言
 class Player;
 
+// GameSceneの前方宣言
+class GameScene;
+
 enum class Phase {
 	approach, // 接近する
 	leave,    // 離脱する
@@ -13,9 +16,7 @@ enum class Phase {
 
 class Enemy {
 public:
-
 	Enemy();
-	~Enemy();
 
 	// 自作メンバ関数
 	void Approach();
@@ -43,7 +44,11 @@ public:
 	void OnCollision();
 
 	// 弾リストを取得
-	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+	// const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
+	bool IsDead() const { return isDead_; }
 
 private:
 	// メンバ関数ポインタのテーブル
@@ -55,15 +60,20 @@ private:
 	Vector3 move_;
 	float kCharacterSpeed_;
 	Phase phase_ = Phase::approach;
-	
+
 	// 自キャラ
 	Player* player_ = nullptr;
-	
+
 	// 弾
 	EnemyBullet* bullet_ = nullptr;
 
 	// 発射タイマー
 	int32_t fireTimer = 0;
 
-	std::list<EnemyBullet*> bullets_;
+	// std::list<EnemyBullet*> bullets_;
+
+	// ゲームシーン
+	GameScene* gameScene_ = nullptr;
+
+	bool isDead_ = false;
 };

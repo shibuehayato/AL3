@@ -50,6 +50,12 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollisions();
 
+/// <summary>
+/// 敵弾を追加する
+/// </summary>
+/// <param name="enemyBullet">敵弾</param>
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -84,6 +90,9 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 	// レールカメラ
 	RailCamera* railCamera_ = nullptr;
+
+	std::list<Enemy*> enemys_;
+	std::list<EnemyBullet*> enemyBullets_;
 
 	/// <summary>
 	/// ゲームシーン用

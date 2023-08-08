@@ -2,15 +2,10 @@
 #include "Matrix.h"
 #include "Player.h"
 #include <cassert>
+#include "GameScene.h"
+#include "ImGuiManager.h"
 
 Enemy::Enemy() {}
-
-Enemy::~Enemy(){
-	// bullet_の解放
-	for (EnemyBullet* bullet : bullets_) {
-		delete bullet;
-	}
-}
 
 void Enemy::Initialize(Model* model, const Vector3& position)
 {
@@ -58,27 +53,7 @@ void Enemy::Leave()
 }
 
 void Enemy::Update()
-{ 
-	// 敵の移動ベクトル
-	//Vector3 move = {0, 0, 0};
-	// 敵の移動速さ
-	//const float kCharacterSpeed = 0.2f;
-	
-	//switch (phase_) { 
-	//case Phase::approach:
-	//default:
-	//	move.z -= kCharacterSpeed;
-	//	// 規定の位置に到達したら削除
-	//	if (worldTransform_.translation_.z < 0.0f) {
-	//		phase_ = Phase::leave;
-	//	}
-	//	break;
-	//case Phase::leave:
-	//	move.x -= kCharacterSpeed;
-	//	move.y += kCharacterSpeed;
-	//	break;
-	//}
-	    
+{ 	    
 	// 発射タイマーカウントダウン
 	    --fireTimer;
 	    // 指定時間に達した
@@ -89,23 +64,8 @@ void Enemy::Update()
 		fireTimer = kFireInterval;
 	    }
 
-	// デスフラグの立った弾を削除
-	    bullets_.remove_if([](EnemyBullet* bullet) {
-		    if (bullet->IsDead()) {
-			    delete bullet;
-			    return true;
-		    }
-		    return false;
-	    });
-
-	// 弾更新
-	    for (EnemyBullet* bullet : bullets_) {
-		bullet->Update();
-		}
-
-	(this->* spPhaseTable[0])();
-	// 移動ベクトルを加算
-	worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move_);
+	(this->*spPhaseTable[0])();
+	
 	worldTransform_.UpdateMatrix();
 }
 
@@ -140,7 +100,7 @@ void Enemy::Fire()
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 	
 	// 弾を登録
-	bullets_.push_back(newBullet);
+	gameScene_->AddEnemyBullet(newBullet);
 }
 
 void Enemy::ApproachInitialize()
@@ -149,14 +109,12 @@ void Enemy::ApproachInitialize()
 	fireTimer = kFireInterval;
 }
 
-void Enemy::OnCollision(){}
+void Enemy::OnCollision()
+{
+	isDead_ = true;
+}
 
 void Enemy::Draw(ViewProjection viewProjection) 
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-
-	// 弾描画
-    for (EnemyBullet* bullet : bullets_) {
-    		bullet->Draw(viewProjection);
-    	}
 }
