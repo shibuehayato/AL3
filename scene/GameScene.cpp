@@ -246,22 +246,22 @@ void GameScene::CheckAllCollisions()
 	#pragma endregion
 
 	#pragma region 自弾と敵キャラの当たり判定
-	posA = enemy_->GetWorldPosition();
+	for (Enemy* enemy : enemys_) 
+	{
+		    for (PlayerBullet* bullet : playerBullets) {
+			    posA = enemy->GetWorldPosition();
+			    posB = bullet->GetWorldPosition();
 
-	for (PlayerBullet* bullet : playerBullets) {
-		    posB = bullet->GetWorldPosition();
+			    Vector3 Distance = {
+			        (posA.x - posB.x) * (posA.x - posB.x), (posA.y - posB.y) * (posA.y - posB.y),
+			        (posA.z - posB.z) * (posA.z - posB.z)};
 
-			Vector3 Distance = {
-		        (posA.x - posB.x) * (posA.x - posB.x), 
-				(posA.y - posB.y) * (posA.y - posB.y),
-		        (posA.z - posB.z) * (posA.z - posB.z)
-			};
-
-			if (Distance.x + Distance.y + Distance.z <= 
-				(enemyRadius + playerBulletRadius) * (enemyRadius + playerBulletRadius)) {
-			    enemy_->OnCollision();
-			    bullet->OnCollision();
-			}
+			    if (Distance.x + Distance.y + Distance.z <=
+			        (enemyRadius + playerBulletRadius) * (enemyRadius + playerBulletRadius)) {
+				    enemy->OnCollision();
+				    bullet->OnCollision();
+			    }
+		    }
 	}
 	#pragma endregion
 	
@@ -303,12 +303,12 @@ void GameScene::LoadEnemyPopData()
 	file.close();
 }
 
-void GameScene::EnemyPop(Vector3 pos)
+void GameScene::EnemyPop(Vector3 position)
 {
 	// 敵キャラの生成
 	enemy_ = new Enemy();
 	// 敵キャラの初期化
-	enemy_->Initialize(model_, pos);
+	enemy_->Initialize(model_, position);
 	// 敵キャラにゲームシーンを渡す
 	enemy_->SetGameScene(this);
 	// 敵キャラに自キャラのアドレスを渡す

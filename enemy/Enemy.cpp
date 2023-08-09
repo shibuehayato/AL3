@@ -87,7 +87,7 @@ void Enemy::Fire()
 	const float kBulletSpeed = 1.0f;
 
 	Vector3 playerPosition = player_->GetWorldPosition();
-	Vector3 enemyPosition = this->GetWorldPosition();
+	Vector3 enemyPosition = GetWorldPosition();
 	Vector3 velocity = Sub(playerPosition,enemyPosition);
 	velocity = Normalize(velocity);
 	velocity.x *= kBulletSpeed;
@@ -96,6 +96,7 @@ void Enemy::Fire()
 
 	// 弾を発生し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
+	
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 	
 	// 弾を登録
