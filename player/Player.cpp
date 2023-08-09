@@ -69,7 +69,7 @@ void Player::Update() {
 	// キャラクターの座標を画面表示する処理
 	ImGui::Begin("Player");
 	ImGui::InputFloat3("InputFloat3", moves);
-	ImGui::SliderFloat3("SliderFloat3", moves, 10.0f, 30.0f);
+	ImGui::SliderFloat3("SliderFloat3", moves, 0.0f, 30.0f);
 	ImGui::Text("DebugCamera ENTER");
 	ImGui::End();
 	

@@ -52,8 +52,8 @@ void Enemy::Leave()
 	    move_.y += kCharacterSpeed_;
 }
 
-void Enemy::Update()
-{ 	    
+void Enemy::Update() {
+	    
 	// 発射タイマーカウントダウン
 	    --fireTimer;
 	    // 指定時間に達した
@@ -63,9 +63,8 @@ void Enemy::Update()
 		// 発射タイマーを初期化
 		fireTimer = kFireInterval;
 	    }
-
 	(this->*spPhaseTable[0])();
-	
+	    worldTransform_.translation_ = VectorAdd(worldTransform_.translation_, move_);
 	worldTransform_.UpdateMatrix();
 }
 
