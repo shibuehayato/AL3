@@ -4,6 +4,8 @@
 #include "Input.h"
 #include "PlayerBullet.h"
 #include <list>
+#include "Sprite.h"
+
 class Player {
 public:
 

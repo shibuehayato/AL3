@@ -2,6 +2,7 @@
 #include <cassert>
 #include "Matrix.h"
 #include "ImGuiManager.h"
+#include "TextureManager.h"
 
 Player::Player() {}
 
