@@ -34,6 +34,9 @@ void GameScene::Initialize() {
 	// ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("sample.png");
 
+	// レティクルのテクスチャ
+	TextureManager::Load("reticle.png");
+
 	// 3Dモデルデータの生成
 	model_ = Model::Create();
 
@@ -71,7 +74,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	// 自キャラの更新
-	player_->Update();
+	player_->Update(viewProjection_);
 
 	// 敵キャラの更新
 	UpdateEnemyPopCommands();
@@ -189,6 +192,8 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
+
+	player_->DrawUI();
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
