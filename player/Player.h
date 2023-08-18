@@ -23,6 +23,8 @@ public:
 
 	void Attack();
 
+	void GetMousePos(ViewProjection viewProjection);
+
 	/// <summary>
 	/// 親となるワールドトランスフォームをセット
 	/// </summary>

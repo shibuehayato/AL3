@@ -89,6 +89,8 @@ void Player::Update(ViewProjection viewProjection) {
 	worldTransform_.translation_.y = moves[1];
 	worldTransform_.translation_.z = moves[2];
 
+	GetMousePos(viewProjection);
+
 	// 旋回処理
 	Rotate();
 
@@ -232,4 +234,54 @@ void Player::Draw(ViewProjection viewProjection) {
 void Player::DrawUI() 
 { 
 	sprite2DReticle_->Draw(); 
+}
+
+void Player::GetMousePos(ViewProjection viewProjection)
+{
+	POINT mousePosition;
+
+	GetCursorPos(&mousePosition);
+
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+
+	ScreenToClient(hwnd, &mousePosition);
+
+	sprite2DReticle_->SetPosition({(float)mousePosition.x, (float)mousePosition.y});
+
+	// ビュープロジェクションビューポート合成行列
+	Matrix4x4 matVPV = Multiply(
+	    viewProjection.matView,
+	    Multiply(
+	        viewProjection.matProjection,
+	        MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1)));
+	// 合成行列の逆行列を計算する
+	Matrix4x4 matInverseVPV = Inverse(matVPV);
+
+	// スクリーン座標
+	Vector3 posNear = Vector3(sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0);
+	Vector3 posFar = Vector3(sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 1);
+
+	// スクリーン座標系からワールド座標系へ
+	posNear = Transform(posNear, matInverseVPV);
+	posFar = Transform(posFar, matInverseVPV);
+
+	// マウスレイの方向
+	Vector3 mouseDirection = Add(posFar, posNear);
+	mouseDirection = Normalize(mouseDirection);
+	// カメラから照準オブジェクトの距離
+	const float kDistanceTestObject = 50.0f;
+	worldTransform3DReticle_.translation_.x = posNear.x + mouseDirection.x * kDistanceTestObject;
+	worldTransform3DReticle_.translation_.y = posNear.y + mouseDirection.y * kDistanceTestObject;
+	worldTransform3DReticle_.translation_.z = posNear.z + mouseDirection.z * kDistanceTestObject;
+
+	worldTransform3DReticle_.UpdateMatrix();
+	worldTransform3DReticle_.TransferMatrix();
+
+	ImGui::Begin("Player");
+	ImGui::Text("Near:(%+.2f,%+.2f,%.2f)", posNear.x, posNear.y, posNear.z);
+	ImGui::Text("Far:(%+.2f,%+.2f,%.2f)", posFar.x, posFar.y, posFar.z);
+	ImGui::Text(
+	    "3DRetixle:(%+.2f,%+.2f,%.2f)", worldTransform3DReticle_.translation_.x,
+	    worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);
+	ImGui::End();
 }
