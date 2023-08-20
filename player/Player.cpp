@@ -30,25 +30,16 @@ void Player::Initialize(Model *model,uint32_t textureHandle, Vector3 pos) {
 	// レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("reticle.png");
 
-	// スプライト生成
-	sprite2DReticle_ =
-	    Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
-
 	// シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
 	worldTransform_.translation_ = Add(worldTransform_.translation_, pos);
+
+	// スプライト生成
+	sprite2DReticle_ =
+	    Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
 void Player::Update(ViewProjection viewProjection) {
-
-	// デスフラグの立った弾を削除
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
 
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
@@ -58,6 +49,15 @@ void Player::Update(ViewProjection viewProjection) {
 
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 0.2f;
+
+	// ゲームパッドの状態を得る変数　(XINPUT)
+	XINPUT_STATE joyState;
+
+	// ジョイスティック状態取得
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		move.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+	} 
 
 	// 押した方向で移動ベクトルを変更 (左右)
 	if (input_->PushKey(DIK_LEFT)) {
@@ -88,19 +88,6 @@ void Player::Update(ViewProjection viewProjection) {
 	worldTransform_.translation_.x = moves[0];
 	worldTransform_.translation_.y = moves[1];
 	worldTransform_.translation_.z = moves[2];
-
-	GetMousePos(viewProjection);
-
-	// 旋回処理
-	Rotate();
-
-	// キャラクター攻撃処理
-	Attack();
-
-	// 弾更新
-	for (PlayerBullet* bullet : bullets_) {
-		bullet->Update();
-	}
 
 	// 移動限界座標
 	const float kMoveLimitX = 20;
@@ -134,8 +121,9 @@ void Player::Update(ViewProjection viewProjection) {
 
 		worldTransform3DReticle_.UpdateMatrix();
 		worldTransform3DReticle_.TransferMatrix();
-	}
 
+	}
+	
 	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
 	{
 		Vector3 positionReticle;
@@ -156,8 +144,28 @@ void Player::Update(ViewProjection viewProjection) {
 
 		// スプライトのレティクルに座標設定
 		sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
-	}
 
+		GetMousePos(viewProjection);
+		// 旋回処理
+		Rotate();
+
+		// キャラクター攻撃処理
+		Attack();
+
+		// 弾更新
+		for (PlayerBullet* bullet : bullets_) {
+			bullet->Update();
+		}
+
+		// デスフラグの立った弾を削除
+		bullets_.remove_if([](PlayerBullet* bullet) {
+			if (bullet->IsDead()) {
+				delete bullet;
+				return true;
+			}
+			return false;
+		});
+	}
 }
 
 void Player::Rotate()
@@ -174,6 +182,38 @@ void Player::Rotate()
 }
 
 void Player::Attack() {
+	XINPUT_STATE joyState;
+
+	// ゲームパッド未接続なら何もせず抜ける
+	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
+		return;
+	}
+
+	// Rトリガーを押していたら
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+		// 弾の速度
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+
+		// 速度ベクトルを自機の向きに合わせて回転させる
+		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+		velocity.x = worldTransform3DReticle_.translation_.x - worldTransform_.translation_.x;
+		velocity.y = worldTransform3DReticle_.translation_.y - worldTransform_.translation_.y;
+		velocity.z = worldTransform3DReticle_.translation_.z - worldTransform_.translation_.z;
+		velocity = Normalize(velocity);
+		velocity.x *= kBulletSpeed;
+		velocity.y *= kBulletSpeed;
+		velocity.z *= kBulletSpeed;
+
+		// 弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+		// 弾を登録
+		bullets_.push_back(newBullet);
+	}
+
 	if (input_->PushKey(DIK_SPACE)) {
 
 		// 弾の速度
@@ -183,18 +223,21 @@ void Player::Attack() {
 		// 速度ベクトルを自機の向きに合わせて回転させる
 		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
-		// 弾を生成し、初期化
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, GetWorldPosition(), velocity);
-
-		// 弾を登録
-		bullets_.push_back(newBullet);
-
+		velocity.x = worldTransform3DReticle_.translation_.x - worldTransform_.translation_.x;
+		velocity.y = worldTransform3DReticle_.translation_.y - worldTransform_.translation_.y;
 		velocity.z = worldTransform3DReticle_.translation_.z - worldTransform_.translation_.z;
 		velocity = Normalize(velocity);
 		velocity.x *= kBulletSpeed;
 		velocity.y *= kBulletSpeed;
 		velocity.z *= kBulletSpeed;
+		
+			// 弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+		// 弾を登録
+		bullets_.push_back(newBullet);
+		
 	}
 }
 
@@ -269,7 +312,7 @@ void Player::GetMousePos(ViewProjection viewProjection)
 	Vector3 mouseDirection = Add(posFar, posNear);
 	mouseDirection = Normalize(mouseDirection);
 	// カメラから照準オブジェクトの距離
-	const float kDistanceTestObject = 50.0f;
+	const float kDistanceTestObject = 80.0f;
 	worldTransform3DReticle_.translation_.x = posNear.x + mouseDirection.x * kDistanceTestObject;
 	worldTransform3DReticle_.translation_.y = posNear.y + mouseDirection.y * kDistanceTestObject;
 	worldTransform3DReticle_.translation_.z = posNear.z + mouseDirection.z * kDistanceTestObject;
