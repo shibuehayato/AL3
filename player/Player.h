@@ -62,6 +62,8 @@ private:
 
 	// 2Dレティクル用スプライト
 	Sprite* sprite2DReticle_ = nullptr;
+	Vector2 ReticlePos_ = {640, 320};
+	Vector3 positionReticle_;
 
 	std::list<PlayerBullet*> bullets_;
 };

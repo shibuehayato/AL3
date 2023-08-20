@@ -34,9 +34,13 @@ void Player::Initialize(Model *model,uint32_t textureHandle, Vector3 pos) {
 	input_ = Input::GetInstance();
 	worldTransform_.translation_ = Add(worldTransform_.translation_, pos);
 
+	ReticlePos_.x = 760;
+	ReticlePos_.y = 320;
+
+
 	// スプライト生成
 	sprite2DReticle_ =
-	    Sprite::Create(textureReticle, {640.0f, 360.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	    Sprite::Create(textureReticle, ReticlePos_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
 void Player::Update(ViewProjection viewProjection) {
@@ -130,6 +134,12 @@ void Player::Update(ViewProjection viewProjection) {
 		positionReticle.x = worldTransform3DReticle_.matWorld_.m[3][0];
 		positionReticle.y = worldTransform3DReticle_.matWorld_.m[3][1];
 		positionReticle.z = worldTransform3DReticle_.matWorld_.m[3][2];
+
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			ReticlePos_.x += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * 5.0f;
+			ReticlePos_.y -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * 5.0f;
+			sprite2DReticle_->SetPosition(ReticlePos_);
+		}
 
 		// ビューポート行列
 		Matrix4x4 matViewport =
@@ -289,7 +299,10 @@ void Player::GetMousePos(ViewProjection viewProjection)
 
 	ScreenToClient(hwnd, &mousePosition);
 
-	sprite2DReticle_->SetPosition({(float)mousePosition.x, (float)mousePosition.y});
+	Vector2 Reticle;
+	Reticle.x = float(ReticlePos_.x);
+	Reticle.y = float(ReticlePos_.y);
+	sprite2DReticle_->SetPosition(Reticle);
 
 	// ビュープロジェクションビューポート合成行列
 	Matrix4x4 matVPV = Multiply(
@@ -301,12 +314,13 @@ void Player::GetMousePos(ViewProjection viewProjection)
 	Matrix4x4 matInverseVPV = Inverse(matVPV);
 
 	// スクリーン座標
-	Vector3 posNear = Vector3(sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 0);
-	Vector3 posFar = Vector3(sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y, 1);
+	Vector3 posNear = Vector3(float(ReticlePos_.x), float(ReticlePos_.y), 0);
+	Vector3 posFar = Vector3(float(ReticlePos_.x), float(ReticlePos_.y), 1);
+	
 
 	// スクリーン座標系からワールド座標系へ
-	posNear = Transform(posNear, matInverseVPV);
 	posFar = Transform(posFar, matInverseVPV);
+	posNear = Transform(posNear, matInverseVPV);
 
 	// マウスレイの方向
 	Vector3 mouseDirection = Add(posFar, posNear);
