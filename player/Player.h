@@ -45,6 +45,8 @@ public:
     /// </summary>
 	void DrawUI();
 
+	void Clear(ViewProjection viewProjection);
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;

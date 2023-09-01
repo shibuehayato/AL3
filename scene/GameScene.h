@@ -80,6 +80,8 @@ private: // メンバ変数
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 
+	uint32_t textureHandle1_ = 0;
+
 	//3Dモデルデータ
 	Model* model_ = nullptr;
 
@@ -117,6 +119,8 @@ private: // メンバ変数
 	bool isWaiting_;
 	// 待機タイマー
 	int32_t waitTimer_;
+
+	Sprite* sprite_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

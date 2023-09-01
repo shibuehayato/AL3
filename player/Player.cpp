@@ -21,6 +21,8 @@ void Player::Initialize(Model *model,uint32_t textureHandle, Vector3 pos) {
 	model_ = model;
 
 	textureHandle_ = textureHandle;
+	
+
 
 	worldTransform_.Initialize();
 

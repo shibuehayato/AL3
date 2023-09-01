@@ -13,6 +13,7 @@ GameScene::~GameScene() {
 	delete skydome_;
 	delete modelSkydome_;
 	delete railCamera_;
+	delete sprite_;
 
 	for (Enemy* enemy : enemys_)
 	{
@@ -33,6 +34,9 @@ void GameScene::Initialize() {
 
 	// ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("sample.png");
+
+	textureHandle1_ = TextureManager::Load("Sprit.png");
+	sprite_ = Sprite::Create(textureHandle1_, {0, 0});
 
 	// レティクルのテクスチャ
 	TextureManager::Load("reticle.png");
@@ -194,6 +198,10 @@ void GameScene::Draw() {
 	Sprite::PreDraw(commandList);
 
 	player_->DrawUI();
+	
+	if (railCamera_->GetWorldTransform().translation_.z >= 10.0f) {
+		    sprite_->Draw();
+	}
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
