@@ -4,10 +4,7 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { 
-	delete model_;
-	delete player_;
-}
+GameScene::~GameScene() {}
 
 void GameScene::Initialize() {
 
@@ -19,15 +16,15 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("sample.png");
 
 	// 3Dモデルデータの生成
-	model_ = Model::Create();
+	model_.reset(Model::Create());
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
 	// 自キャラの生成
-	player_ = new Player();
+	player_ = std::make_unique<Player>();
 	// 自キャラの初期化
-	player_->Initialize( model_,textureHandle_);
+	player_->Initialize( model_.get(),textureHandle_);
 }
 
 void GameScene::Update() {
