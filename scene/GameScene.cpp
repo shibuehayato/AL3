@@ -25,11 +25,23 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	// 自キャラの初期化
 	player_->Initialize( model_.get(),textureHandle_);
+
+	// 3Dモデルの生成
+	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
+	// 天球の生成
+	skydome_ = std::make_unique<Skydome>();
+	// 天球の初期化
+	skydome_->Initialize(modelSkydome_.get());
+
 }
 
 void GameScene::Update() {
-// 自キャラの更新
+	// 自キャラの更新
 	player_->Update();
+
+	// 天球の更新
+	skydome_->Update();
+
 }
 
 void GameScene::Draw() {
@@ -60,6 +72,10 @@ void GameScene::Draw() {
 	/// </summary>
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
+
+	// 天球の描画
+	skydome_->Draw(viewProjection_);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
