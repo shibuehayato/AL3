@@ -8,9 +8,12 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include <Player/Player.h>
+#include "Player.h"
 #include <memory>
 #include "Skydome.h"
+#include "Ground.h"
+#include "DebugCamera.h"
+#include "WorldTransform.h"
 
 /// <summary>
 /// ゲームシーン
@@ -65,6 +68,18 @@ private: // メンバ変数
 
 	// 3Dモデルの生成
 	std::unique_ptr<Model> modelSkydome_;
+
+	// 地面
+	std::unique_ptr<Ground> ground_;
+
+	// 3Dモデルの生成
+	std::unique_ptr<Model> modelGround_;
+
+	// デバッグカメラ
+	std::unique_ptr<DebugCamera> debugCamera_;
+
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
 
 	/// <summary>
 	/// ゲームシーン用
