@@ -64,6 +64,12 @@
     <Filter Include="ソース ファイル\ground">
       <UniqueIdentifier>{5edae5e8-0d63-4239-a6d1-fe45c4a036db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\skydome">
+      <UniqueIdentifier>{e83e3a24-2672-41d8-afa3-be3331751d43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\skydome">
+      <UniqueIdentifier>{89815ea2-9efb-4e88-84db-a89f99cf9156}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,9 +90,6 @@
     <ClCompile Include="math\WorldTransformEx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="skydome\Skydome.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Player\Player.cpp">
       <Filter>ソース ファイル\player</Filter>
     </ClCompile>
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="ground\Ground.cpp">
       <Filter>ソース ファイル\ground</Filter>
+    </ClCompile>
+    <ClCompile Include="skydome\Skydome.cpp">
+      <Filter>ソース ファイル\skydome</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +188,6 @@
     <ClInclude Include="2d\ImGuiManager.h">
       <Filter>ヘッダー ファイル\2d</Filter>
     </ClInclude>
-    <ClInclude Include="skydome\Skydome.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Player\Player.h">
       <Filter>ヘッダー ファイル\player</Filter>
     </ClInclude>
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="ground\Ground.h">
       <Filter>ヘッダー ファイル\ground</Filter>
+    </ClInclude>
+    <ClInclude Include="skydome\Skydome.h">
+      <Filter>ヘッダー ファイル\skydome</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
