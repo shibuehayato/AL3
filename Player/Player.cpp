@@ -10,17 +10,30 @@ void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
 	L_armModel_ = L_arm;
 	assert(R_arm);
 	R_armModel_ = R_arm;
-	worldTransform_.translation_ = {0, 1, 0};
-	worldTransform_.Initialize();
+
+	worldTransformHead_.translation_ = {0, 1.5, 0};
+	worldTransformBody_.translation_ = {0, 0, 0};
+	worldTransformL_arm_.translation_ = {-0.5, 1.5, 0};
+	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
+
+	worldTransformHead_.Initialize();
+	worldTransformBody_.Initialize();
+	worldTransformL_arm_.Initialize();
+	worldTransformR_arm_.Initialize();
 
 }
 
-void Player::Update() { worldTransform_.UpdateMatrix(); }
+void Player::Update() { 
+	worldTransformHead_.UpdateMatrix(); 
+    worldTransformBody_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
+}
 
 void Player::Draw(ViewProjection viewProjection) {
 	// 3Dモデル描画
-	headModel_->Draw(worldTransform_, viewProjection);
-	bodyModel_->Draw(worldTransform_, viewProjection);
-	L_armModel_->Draw(worldTransform_, viewProjection);
-	R_armModel_->Draw(worldTransform_, viewProjection);
+	headModel_->Draw(worldTransformHead_, viewProjection);
+	bodyModel_->Draw(worldTransformBody_, viewProjection);
+	L_armModel_->Draw(worldTransformL_arm_, viewProjection);
+	R_armModel_->Draw(worldTransformR_arm_, viewProjection);
 }

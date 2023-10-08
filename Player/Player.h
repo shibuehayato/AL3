@@ -12,7 +12,10 @@ public:
 
 private:
 	// ワールド変換データ
-	WorldTransform worldTransform_;
+	WorldTransform worldTransformHead_;
+	WorldTransform worldTransformBody_;
+	WorldTransform worldTransformL_arm_;
+	WorldTransform worldTransformR_arm_;
 	// モデル
 	Model* headModel_ = nullptr;
 	Model* bodyModel_ = nullptr;
