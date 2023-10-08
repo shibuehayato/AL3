@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -23,8 +24,16 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = std::make_unique<Player>();
-	// 自キャラの初期化
-	player_->Initialize( model_.get(),textureHandle_);
+	// 3Dモデルの生成
+	modelPlayerHead_.reset(Model::CreateFromOBJ("float_Head", true));
+	modelPlayerBody_.reset(Model::CreateFromOBJ("float_Body", true));
+	modelPlayerL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
+	modelPlayerR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	// 自キャラの左腕の初期化
+	player_->Initialize(
+	    modelPlayerHead_.get(), modelPlayerBody_.get(), 
+		modelPlayerL_arm_.get(), modelPlayerR_arm_.get()
+	);
 
 	// 3Dモデルの生成
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
@@ -41,7 +50,12 @@ void GameScene::Initialize() {
 	ground_->Initialize(modelGround_.get());
 
 	// デバッグカメラの生成
-	debugCamera_ = std::make_unique<DebugCamera>(50, 50);
+	debugCamera_ = std::make_unique<DebugCamera>(2000, 2000);
+	
+	// 軸方向表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	// 軸方向表示が参照するビュープロジェクションを指定する (アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 }
 
