@@ -111,7 +111,7 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="ground\Ground.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="math\Matrix.cpp" />
+    <ClCompile Include="math\MyMath.cpp" />
     <ClCompile Include="math\WorldTransformEx.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
@@ -142,8 +142,8 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="ground\Ground.h" />
     <ClInclude Include="input\Input.h" />
-    <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Matrix4x4.h" />
+    <ClInclude Include="math\MyMath.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
