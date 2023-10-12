@@ -20,6 +20,7 @@ void GameScene::Initialize() {
 	model_.reset(Model::Create());
 
 	// ビュープロジェクションの初期化
+	viewProjection_.translation_ = {0, 1, -10};
 	viewProjection_.Initialize();
 
 	// 自キャラの生成
