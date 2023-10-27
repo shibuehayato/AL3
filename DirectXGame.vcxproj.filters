@@ -70,6 +70,12 @@
     <Filter Include="ソース ファイル\skydome">
       <UniqueIdentifier>{89815ea2-9efb-4e88-84db-a89f99cf9156}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\camera">
+      <UniqueIdentifier>{9ead1d3c-2078-44a4-88d5-f4a754d6a62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\camera">
+      <UniqueIdentifier>{ec8bd9c9-a993-4d9e-bcc4-200332db3bd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -101,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="math\WorldTransformEx.cpp">
       <Filter>ソース ファイル\math</Filter>
+    </ClCompile>
+    <ClCompile Include="camera\FollowCamera.cpp">
+      <Filter>ソース ファイル\camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="skydome\Skydome.h">
       <Filter>ヘッダー ファイル\skydome</Filter>
+    </ClInclude>
+    <ClInclude Include="camera\FollowCamera.h">
+      <Filter>ヘッダー ファイル\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
