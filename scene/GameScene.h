@@ -14,6 +14,7 @@
 #include "Ground.h"
 #include "DebugCamera.h"
 #include "WorldTransform.h"
+#include "FollowCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -85,6 +86,9 @@ private: // メンバ変数
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
+
+	// 追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
 
 	/// <summary>
 	/// ゲームシーン用

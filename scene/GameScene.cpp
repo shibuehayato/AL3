@@ -30,7 +30,7 @@ void GameScene::Initialize() {
 	modelPlayerBody_.reset(Model::CreateFromOBJ("float_Body", true));
 	modelPlayerL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	modelPlayerR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
-	// 自キャラの左腕の初期化
+	// 自キャラの初期化
 	player_->Initialize(
 	    modelPlayerHead_.get(), modelPlayerBody_.get(), 
 		modelPlayerL_arm_.get(), modelPlayerR_arm_.get()
@@ -52,7 +52,17 @@ void GameScene::Initialize() {
 
 	// デバッグカメラの生成
 	debugCamera_ = std::make_unique<DebugCamera>(2000, 2000);
-	
+
+	// 追従カメラの生成
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+
+		// 自キャラに追従カメラのビュープロジェクションをアドレス渡しする
+	player_->SetViewProjection(&followCamera_->GetViewProjection());
+
+	// 自キャラのワールドトランスフォームを追従カメラにセット
+	followCamera_->SetTarget(&player_->GetWorldTransform());
+
 	// 軸方向表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 	// 軸方向表示が参照するビュープロジェクションを指定する (アドレス渡し)
@@ -88,8 +98,11 @@ void GameScene::Update() {
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
-		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		// 追従カメラの更新
+		followCamera_->Update();
+		viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+		viewProjection_.matView = followCamera_->GetViewProjection().matView;
+		viewProjection_.TransferMatrix();
 	}
 
 }

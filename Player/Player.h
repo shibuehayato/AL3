@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Input.h"
 
 class Player {
 public:
@@ -9,6 +10,13 @@ public:
 	void Update();
 
 	void Draw(ViewProjection viewProjection);
+
+	const WorldTransform& GetWorldTransform() { return worldTransformHead_,worldTransformBody_,worldTransformL_arm_,worldTransformR_arm_; }
+
+	void SetViewProjection(const ViewProjection* viewProjection)
+	{
+		viewProjection_ = viewProjection;
+	}
 
 private:
 	// ワールド変換データ
@@ -21,4 +29,10 @@ private:
 	Model* bodyModel_ = nullptr;
 	Model* L_armModel_ = nullptr;
 	Model* R_armModel_ = nullptr;
+
+	// キーボード入力
+	Input* input_ = nullptr;
+
+	// カメラのビュープロジェクション
+	const ViewProjection* viewProjection_ = nullptr;
 };
