@@ -64,10 +64,10 @@ private: // メンバ変数
 	// 自キャラ
 	std::unique_ptr<Player> player_;
 	// 3Dモデルの生成
-	std::unique_ptr<Model> modelPlayerHead_;
-	std::unique_ptr<Model> modelPlayerBody_;
-	std::unique_ptr<Model> modelPlayerL_arm_;
-	std::unique_ptr<Model> modelPlayerR_arm_;
+	std::unique_ptr<Model> modelFighterHead_;
+	std::unique_ptr<Model> modelFighterBody_;
+	std::unique_ptr<Model> modelFighterL_arm_;
+	std::unique_ptr<Model> modelFighterR_arm_;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;

@@ -1,20 +1,21 @@
 ﻿#include "Player.h"
 #include <cassert>
 #include "MyMath.h"
+#include <ImGuiManager.h>
 
 void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
 	assert(head);
-	headModel_ = head;
+	modelFighterHead_ = head;
 	assert(body);
-	bodyModel_ = body;
+	modelFighterBody_ = body;
 	assert(L_arm);
-	L_armModel_ = L_arm;
+	modelFighterL_arm_ = L_arm;
 	assert(R_arm);
-	R_armModel_ = R_arm;
+	modelFighterR_arm_ = R_arm;
 
-	worldTransformHead_.translation_ = {0, 1.5, 0};
+	worldTransformHead_.translation_ = {0, 1, 0};
 	worldTransformBody_.translation_ = {0, 0, 0};
-	worldTransformL_arm_.translation_ = {-0.5, 1.5, 0};
+	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0};
 	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
 
 	worldTransformHead_.Initialize();
@@ -25,6 +26,7 @@ void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
 	// シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
 
+	InitializeFloatingGimmick();
 }
 
 void Player::Update() { 
@@ -51,8 +53,8 @@ void Player::Update() {
 
 		worldTransformHead_.rotation_.y = std::atan2(move.x, move.z);
 		worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
-		worldTransformL_arm_.rotation_.y = std::atan2(move.x, move.y);
-		worldTransformR_arm_.rotation_.y = std::atan2(move.x, move.y);
+		worldTransformL_arm_.rotation_.y = std::atan2(move.x, move.z);
+		worldTransformR_arm_.rotation_.y = std::atan2(move.x, move.z);
 
 		// 座標移動
 		worldTransformHead_.translation_ = Add(worldTransformHead_.translation_, move);
@@ -60,6 +62,8 @@ void Player::Update() {
 		worldTransformL_arm_.translation_ = Add(worldTransformL_arm_.translation_, move);
 		worldTransformR_arm_.translation_ = Add(worldTransformR_arm_.translation_, move);
 	} 
+
+	UpdateFloatingGimmick();
 
 	worldTransformHead_.UpdateMatrix(); 
     worldTransformBody_.UpdateMatrix();
@@ -69,8 +73,44 @@ void Player::Update() {
 
 void Player::Draw(ViewProjection viewProjection) {
 	// 3Dモデル描画
-	headModel_->Draw(worldTransformHead_, viewProjection);
-	bodyModel_->Draw(worldTransformBody_, viewProjection);
-	L_armModel_->Draw(worldTransformL_arm_, viewProjection);
-	R_armModel_->Draw(worldTransformR_arm_, viewProjection);
+	modelFighterHead_->Draw(worldTransformHead_, viewProjection);
+	modelFighterBody_->Draw(worldTransformBody_, viewProjection);
+	modelFighterL_arm_->Draw(worldTransformL_arm_, viewProjection);
+	modelFighterR_arm_->Draw(worldTransformR_arm_, viewProjection);
+}
+
+void Player::InitializeFloatingGimmick()
+{ 
+	floatingParameter_ = 0.0f;
+}
+
+void Player::UpdateFloatingGimmick() {
+	// 浮遊移動のサイクル<frame>
+	const uint16_t cycle = 60;
+	// 1フレームでのパラメータ加算値
+	const float step = 2.0f * 3.14f / cycle;
+
+	// パラメータを1ステップ分加算
+	floatingParameter_ += step;
+	// 2πを超えたら0に戻す
+	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
+
+	// 浮遊を座標に反映
+	worldTransformHead_.translation_.y = std::sin(floatingParameter_) * range_ + head_[1];
+	worldTransformBody_.translation_.y = std::sin(floatingParameter_) * range_ + body_[1];
+	worldTransformL_arm_.translation_.y = std::sin(floatingParameter_) * range_ + l_arm[1];
+	worldTransformR_arm_.translation_.y = std::sin(floatingParameter_) * range_ + r_arm[1];
+
+	// 両腕をぶらぶらさせる
+	worldTransformL_arm_.rotation_.x = std::sin(floatingParameter_) * range_;
+	worldTransformR_arm_.rotation_.x = std::sin(floatingParameter_) * range_;
+
+	ImGui::Begin("Player");
+	ImGui::SliderFloat3("Head Translation", head_, 0.0f, 5.0f);
+	ImGui::SliderFloat3("Body Translation", body_, 0.0f, 5.0f);
+	ImGui::SliderFloat3("ArmL Translation", l_arm, -5.0f, 5.0f);
+	ImGui::SliderFloat3("ArmR Translation", r_arm, -5.0f, 5.0f);
+	ImGui::SliderFloat("range", &range_, 0.0f, 5.0f);
+	ImGui::End();
+
 }
