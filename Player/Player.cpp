@@ -13,10 +13,14 @@ void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
 	assert(R_arm);
 	modelFighterR_arm_ = R_arm;
 
-	worldTransformHead_.translation_ = {0, 1, 0};
+	worldTransformHead_.translation_ = {0, 1.8f, 0};
 	worldTransformBody_.translation_ = {0, 0, 0};
 	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0};
 	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
+
+	worldTransformHead_.parent_ = &worldTransformBody_;
+	worldTransformL_arm_.parent_ = &worldTransformBody_;
+	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
 	worldTransformHead_.Initialize();
 	worldTransformBody_.Initialize();
@@ -50,23 +54,17 @@ void Player::Update() {
 
 		// オフセットをカメラの回転に合わせて回転させる
 		move = TransformNormal(move, RotationMatrix);
-
-		worldTransformHead_.rotation_.y = std::atan2(move.x, move.z);
+	
 		worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
-		worldTransformL_arm_.rotation_.y = std::atan2(move.x, move.z);
-		worldTransformR_arm_.rotation_.y = std::atan2(move.x, move.z);
 
 		// 座標移動
-		worldTransformHead_.translation_ = Add(worldTransformHead_.translation_, move);
 		worldTransformBody_.translation_ = Add(worldTransformBody_.translation_, move);
-		worldTransformL_arm_.translation_ = Add(worldTransformL_arm_.translation_, move);
-		worldTransformR_arm_.translation_ = Add(worldTransformR_arm_.translation_, move);
 	} 
 
 	UpdateFloatingGimmick();
 
-	worldTransformHead_.UpdateMatrix(); 
     worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix(); 
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 }
@@ -96,10 +94,7 @@ void Player::UpdateFloatingGimmick() {
 	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * 3.14f);
 
 	// 浮遊を座標に反映
-	worldTransformHead_.translation_.y = std::sin(floatingParameter_) * range_ + head_[1];
-	worldTransformBody_.translation_.y = std::sin(floatingParameter_) * range_ + body_[1];
-	worldTransformL_arm_.translation_.y = std::sin(floatingParameter_) * range_ + l_arm[1];
-	worldTransformR_arm_.translation_.y = std::sin(floatingParameter_) * range_ + r_arm[1];
+	worldTransformBody_.translation_.y = std::sin(floatingParameter_) * range_;
 
 	// 両腕をぶらぶらさせる
 	worldTransformL_arm_.rotation_.x = std::sin(floatingParameter_) * range_;

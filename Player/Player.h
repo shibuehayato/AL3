@@ -47,7 +47,7 @@ private:
 	// 浮遊の振幅<m>
 	float range_ = 0.4f;
 
-	float head_[3] = {0, 1.8f, 0};
+	float head_[3] = {0, 1.4f, 0};
 	float body_[3] = {0, 0.2f, 0};
 	float l_arm[3] = {-0.6f, 1.5f, 0};
 	float r_arm[3] = {0.6f, 1.5f, 0};
