@@ -3,15 +3,9 @@
 #include "MyMath.h"
 #include <ImGuiManager.h>
 
-void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
-	assert(head);
-	modelFighterHead_ = head;
-	assert(body);
-	modelFighterBody_ = body;
-	assert(L_arm);
-	modelFighterL_arm_ = L_arm;
-	assert(R_arm);
-	modelFighterR_arm_ = R_arm;
+void Player::Initialize(const std::vector<Model*>& models) {
+	// 基底クラスの初期化
+	BaseCharacter::Initialize(models);
 
 	worldTransformHead_.translation_ = {0, 1.8f, 0};
 	worldTransformBody_.translation_ = {0, 0, 0};
@@ -22,11 +16,6 @@ void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
 	worldTransformL_arm_.parent_ = &worldTransformBody_;
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
 
-	worldTransformHead_.Initialize();
-	worldTransformBody_.Initialize();
-	worldTransformL_arm_.Initialize();
-	worldTransformR_arm_.Initialize();
-
 	// シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
 
@@ -34,6 +23,9 @@ void Player::Initialize(Model* head, Model* body, Model* L_arm, Model* R_arm) {
 }
 
 void Player::Update() { 
+
+	// 基底クラスの更新
+	BaseCharacter::Update();
 
 	// ゲームパッドの状態を得る変数
 	XINPUT_STATE joyState;
@@ -71,10 +63,10 @@ void Player::Update() {
 
 void Player::Draw(ViewProjection viewProjection) {
 	// 3Dモデル描画
-	modelFighterHead_->Draw(worldTransformHead_, viewProjection);
-	modelFighterBody_->Draw(worldTransformBody_, viewProjection);
-	modelFighterL_arm_->Draw(worldTransformL_arm_, viewProjection);
-	modelFighterR_arm_->Draw(worldTransformR_arm_, viewProjection);
+	models_[0]->Draw(worldTransformBody_, viewProjection);
+	models_[1]->Draw(worldTransformHead_, viewProjection);
+	models_[2]->Draw(worldTransformL_arm_, viewProjection);
+	models_[3]->Draw(worldTransformR_arm_, viewProjection);
 }
 
 void Player::InitializeFloatingGimmick()

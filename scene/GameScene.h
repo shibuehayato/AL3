@@ -15,6 +15,7 @@
 #include "DebugCamera.h"
 #include "WorldTransform.h"
 #include "FollowCamera.h"
+#include "Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -68,6 +69,13 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelFighterBody_;
 	std::unique_ptr<Model> modelFighterL_arm_;
 	std::unique_ptr<Model> modelFighterR_arm_;
+
+	// 敵キャラ
+	std::unique_ptr<Enemy> enemy_;
+	// 3Dモデルの生成
+	std::unique_ptr<Model> modelEnemyBody_;
+	std::unique_ptr<Model> modelEnemyL_arm_;
+	std::unique_ptr<Model> modelEnemyR_arm_;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
