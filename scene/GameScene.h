@@ -77,6 +77,9 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelEnemyL_arm_;
 	std::unique_ptr<Model> modelEnemyR_arm_;
 
+	// 3Dモデル
+	std::unique_ptr<Model> modelHammer_;
+
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 

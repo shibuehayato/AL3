@@ -2,6 +2,7 @@
 #include <cassert>
 #include "MyMath.h"
 #include <ImGuiManager.h>
+#include <functional>
 
 void Player::Initialize(const std::vector<Model*>& models) {
 	// 基底クラスの初期化
@@ -11,10 +12,12 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformBody_.translation_ = {0, 0, 0};
 	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0};
 	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
+	worldTransformHammer_.translation_ = {0, 1.5f, 0};
 
 	worldTransformHead_.parent_ = &worldTransformBody_;
 	worldTransformL_arm_.parent_ = &worldTransformBody_;
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
+	worldTransformHammer_.parent_ = &worldTransformBody_;
 
 	// シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
@@ -23,40 +26,42 @@ void Player::Initialize(const std::vector<Model*>& models) {
 }
 
 void Player::Update() { 
-
-	// 基底クラスの更新
+		// 基底クラスの更新
 	BaseCharacter::Update();
 
-	// ゲームパッドの状態を得る変数
-	XINPUT_STATE joyState;
+	if (behaviorRequest_) {
+		// 振るまいを変更する
+		behavior_ = behaviorRequest_.value();
+		// 各振るまいごとの初期化
+		switch (behavior_) { 
+		case Behavior::kRoot:
+		default:
+			BehaviorRootInitialize();
+			break;
+		case Behavior::kAttack:
+			BehaviorAttackInitialize();
+			break;
+		}
+		// 振るまいリクエストをリセット
+		behaviorRequest_ = std::nullopt;
+	}
 
-	// ゲームパッドが有効の場合if文が通る
-	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-		// 速さ
-		const float speed = 0.3f;
+	switch (behavior_) {
+		// 通常行動
+	case Behavior::kRoot:
+		BehaviorRootUpdate();
+		break;
+	case Behavior::kAttack:
+		BehaviorAttackUpdate();
+		break;
+	}
 
-		// 移動量
-		Vector3 move = {0, 0, 0};
+	ImGui::Begin("A");
+	ImGui::DragFloat3("a", &worldTransformHammer_.rotation_.x);
+	ImGui::End();
 
-		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
-		move.z += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;
-
-		// カメラの角度から回転行列を計算する
-		Matrix4x4 RotationMatrix = MakeRotateMatrix(viewProjection_->rotation_);
-
-		// オフセットをカメラの回転に合わせて回転させる
-		move = TransformNormal(move, RotationMatrix);
-	
-		worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
-
-		// 座標移動
-		worldTransformBody_.translation_ = Add(worldTransformBody_.translation_, move);
-	} 
-
-	UpdateFloatingGimmick();
-
-    worldTransformBody_.UpdateMatrix();
-	worldTransformHead_.UpdateMatrix(); 
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 }
@@ -67,6 +72,10 @@ void Player::Draw(ViewProjection viewProjection) {
 	models_[1]->Draw(worldTransformHead_, viewProjection);
 	models_[2]->Draw(worldTransformL_arm_, viewProjection);
 	models_[3]->Draw(worldTransformR_arm_, viewProjection);
+
+	if (behavior_ == Behavior::kAttack) {
+		models_[4]->Draw(worldTransformHammer_, viewProjection);
+	}
 }
 
 void Player::InitializeFloatingGimmick()
@@ -99,5 +108,83 @@ void Player::UpdateFloatingGimmick() {
 	ImGui::SliderFloat3("ArmR Translation", r_arm, -5.0f, 5.0f);
 	ImGui::SliderFloat("range", &range_, 0.0f, 5.0f);
 	ImGui::End();
+}
 
+void Player::BehaviorRootUpdate() 
+{
+	// ゲームパッドの状態を得る変数
+	XINPUT_STATE joyState;
+
+	// ゲームパッドが有効の場合if文が通る
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		// 速さ
+		const float speed = 0.3f;
+
+		// 移動量
+		Vector3 move = {0, 0, 0};
+
+		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
+		move.z += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;
+
+		// カメラの角度から回転行列を計算する
+		Matrix4x4 RotationMatrix = MakeRotateMatrix(viewProjection_->rotation_);
+
+		// オフセットをカメラの回転に合わせて回転させる
+		move = TransformNormal(move, RotationMatrix);
+
+		worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
+
+		// 座標移動
+		worldTransformBody_.translation_ = Add(worldTransformBody_.translation_, move);
+	}
+
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
+			behavior_ = Behavior::kAttack;
+		}
+	}
+
+	UpdateFloatingGimmick();
+}
+
+void Player::BehaviorAttackUpdate() 
+{
+	std::function<float(float)> easeInBack = [](float t) -> float {
+		const float c1 = 1.70158f;
+		const float c2 = c1 * 1.525f;
+
+		return t * t * ((c2 + 1) * t - c2);
+	};
+
+	const float kMaxAttackAnim = 60.0f;
+
+	if (time_ <= 65)
+	{
+		time_++;
+	}
+
+	AfterAttackCooldown_++;
+
+	if (AfterAttackCooldown_ > 120)
+	{
+		behavior_ = Behavior::kRoot;
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
+	worldTransformHammer_.rotation_.x = easeInBack(time_/ kMaxAttackAnim);
+	worldTransformL_arm_.rotation_.x = 3 + easeInBack(time_ / kMaxAttackAnim);
+	worldTransformR_arm_.rotation_.x = 3 + easeInBack(time_ / kMaxAttackAnim);
+}
+
+void Player::BehaviorRootInitialize() 
+{ 
+	AfterAttackCooldown_ = 0;
+	time_ = 0;
+	worldTransformHammer_.rotation_.x = 0;
+	worldTransformL_arm_.rotation_.x = 0;
+	worldTransformR_arm_.rotation_.x = 0;
+}
+
+void Player::BehaviorAttackInitialize() 
+{
 }
