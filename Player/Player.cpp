@@ -41,6 +41,9 @@ void Player::Update() {
 		case Behavior::kAttack:
 			BehaviorAttackInitialize();
 			break;
+		case Behavior::kJump:
+			BehaviorJumpInitialize();
+			break;
 		}
 		// 振るまいリクエストをリセット
 		behaviorRequest_ = std::nullopt;
@@ -53,6 +56,9 @@ void Player::Update() {
 		break;
 	case Behavior::kAttack:
 		BehaviorAttackUpdate();
+		break;
+	case Behavior::kJump:
+		BehaviorJumpUpdate();
 		break;
 	}
 
@@ -144,6 +150,13 @@ void Player::BehaviorRootUpdate()
 		}
 	}
 
+	// Bボタンを押したらジャンプ
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_B) {
+			behavior_ = Behavior::kJump;
+		}
+	}
+
 	UpdateFloatingGimmick();
 }
 
@@ -186,5 +199,35 @@ void Player::BehaviorRootInitialize()
 }
 
 void Player::BehaviorAttackInitialize() 
+{}
+
+void Player::BehaviorJumpInitialize() 
+{ 
+	worldTransformBody_.translation_.y = 0;
+	worldTransformL_arm_.rotation_.x = 0;
+	worldTransformR_arm_.rotation_.x = 0;
+
+	//　ジャンプ初速
+	const float kJumpFirstSpeed = 1.0f;
+	// ジャンプ初速を与える
+	velocity_ = {0.0f, kJumpFirstSpeed, 0.0f};
+}
+
+void Player::BehaviorJumpUpdate() 
 {
+	// 移動
+	worldTransformBody_.translation_ = Add(worldTransformBody_.translation_, velocity_);
+	// 重力加速度
+	const float kGravityAcceleration = 0.05f;
+	// 加速度ベクトル
+	Vector3 accelerationVector = {0, -kGravityAcceleration, 0};
+	// 加速する
+	velocity_ = Add(velocity_, accelerationVector);
+
+	// 着地
+	if (worldTransformBody_.translation_.y <= 0.0f) {
+		worldTransformBody_.translation_.y = 0;
+		// ジャンプ終了
+		behaviorRequest_ = Behavior::kRoot;
+	}
 }

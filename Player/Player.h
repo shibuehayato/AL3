@@ -9,8 +9,9 @@ class Player : public BaseCharacter{
 private:
 	// 振る舞い
 	enum class Behavior {
-		kRoot, // 通常状態
+		kRoot,   // 通常状態
 		kAttack, // 攻撃中
+		kJump,   // ジャンプ中
 	};
 
 	// 振るまい
@@ -41,15 +42,19 @@ public:
 	// 浮遊ギミック更新
 	void UpdateFloatingGimmick();
 	
-	// 通常行動更新
-	void BehaviorRootUpdate();
-	// 攻撃更新
-	void BehaviorAttackUpdate();
-
 	// 通常行動初期化
 	void BehaviorRootInitialize();
 	// 攻撃行動初期化
 	void BehaviorAttackInitialize();
+	// ジャンプ行動初期化
+	void BehaviorJumpInitialize();
+
+	// 通常行動更新
+	void BehaviorRootUpdate();
+	// 攻撃更新
+	void BehaviorAttackUpdate();
+	// ジャンプ行動更新
+	void BehaviorJumpUpdate();
 
 private:
 	// キーボード入力
@@ -65,6 +70,9 @@ private:
 	float range_ = 0.4f;
 
 	float time_ = 0.0f;
+
+	// 速度
+	Vector3 velocity_ = {};
 
 	float head_[3] = {0, 1.4f, 0};
 	float body_[3] = {0, 0.2f, 0};
