@@ -17,7 +17,7 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("sample.png");
 
 	// 3Dモデルデータの生成
-	model_.reset(Model::Create());
+	//model_.reset(Model::Create());
 
 	// ビュープロジェクションの初期化
 	viewProjection_.translation_ = {0, 1, -10};
