@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include <ImGuiManager.h>
 
 GameScene::GameScene() {}
 
@@ -18,6 +19,18 @@ void GameScene::Initialize() {
 
 	// 3Dモデルデータの生成
 	model_.reset(Model::Create());
+
+	TitleTexture_ = TextureManager::Load("scene/title.png");
+	OperationTexture_ = TextureManager::Load("scene/operation.png");
+	ClearTexture_ = TextureManager::Load("scene/clear.png");
+
+	TitleSprite_ = std::make_unique<Sprite>();
+	OperationSprite_ = std::make_unique<Sprite>();
+	ClearSprite_ = std::make_unique<Sprite>();
+
+	TitleSprite_.reset(Sprite::Create(TitleTexture_, {0, 0}));
+	OperationSprite_.reset(Sprite::Create(OperationTexture_, {0, 0}));
+	ClearSprite_.reset(Sprite::Create(ClearTexture_, {0, 0}));
 
 	// ビュープロジェクションの初期化
 	viewProjection_.translation_ = {0, 1, -10};
@@ -86,42 +99,86 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	// 自キャラの更新
-	player_->Update();
+	switch (scene) {
+	case GameScene::TITLE: // タイトルシーン
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					scene = OPERATION;
+				}
+			}
+		}
+		break;
+	case GameScene::OPERATION: // 操作説明
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					scene = GAME;
+				}
+			}
+		}
+		break;
+	case GameScene::GAME:
 
-	// 敵キャラの更新
-	enemy_->Update();
+		// 自キャラの更新
+		player_->Update();
 
-	// 天球の更新
-	skydome_->Update();
+		// 敵キャラの更新
+		enemy_->Update();
 
-	// 地面の更新
-	ground_->Update();
+		// 天球の更新
+		skydome_->Update();
 
-	// デバッグカメラの更新
-	debugCamera_->Update();
+		// 地面の更新
+		ground_->Update();
+
+		// デバッグカメラの更新
+		debugCamera_->Update();
+
+		CheckCollision();
 
 #ifdef _DEBUG
-	if (input_->TriggerKey(DIK_RETURN)) {
-		isDebugCameraActive_ = true;
-	}
+		if (input_->TriggerKey(DIK_RETURN)) {
+			isDebugCameraActive_ = true;
+		}
 #endif
 
-	// カメラの処理
-	if (isDebugCameraActive_) {
-		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		// ビュープロジェクション行列の転送
-		viewProjection_.TransferMatrix();
-	} else {
-		// 追従カメラの更新
-		followCamera_->Update();
-		viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-		viewProjection_.matView = followCamera_->GetViewProjection().matView;
-		viewProjection_.TransferMatrix();
-	}
+		// カメラの処理
+		if (isDebugCameraActive_) {
+			debugCamera_->Update();
+			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+			// ビュープロジェクション行列の転送
+			viewProjection_.TransferMatrix();
+		} else {
+			// 追従カメラの更新
+			followCamera_->Update();
+			viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+			viewProjection_.matView = followCamera_->GetViewProjection().matView;
+			viewProjection_.TransferMatrix();
+		}
 
+		if (enemy_->GetIsDead() == true) {
+			scene = CLEAR;
+		}
+		break;
+	case GameScene::CLEAR:
+
+		player_->Reset();
+		enemy_->Reset();
+
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					scene = TITLE;
+				}
+			}
+		}
+		break;
+	}
 }
 
 void GameScene::Draw() {
@@ -137,6 +194,16 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 	
+	if (scene == TITLE) {
+	TitleSprite_->Draw();
+	}
+	if (scene == OPERATION) {
+		OperationSprite_->Draw();
+	}
+	if (scene == CLEAR) {
+		ClearSprite_->Draw();
+	}
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -150,17 +217,21 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	// 自キャラの描画
-	player_->Draw(viewProjection_);
+	
+	if (scene == GAME) {
 
-	// 敵キャラの描画
-	enemy_->Draw(viewProjection_);
+		// 自キャラの描画
+		player_->Draw(viewProjection_);
 
-	// 天球の描画
-	skydome_->Draw(viewProjection_);
+		// 敵キャラの描画
+		enemy_->Draw(viewProjection_);
 
-	// 地面の描画
-	ground_->Draw(viewProjection_);
+		// 天球の描画
+		skydome_->Draw(viewProjection_);
+
+		// 地面の描画
+		ground_->Draw(viewProjection_);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -178,4 +249,33 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckCollision()
+{
+	float enemyRadius = 1.0f;
+	float hammerRadius = 4.0f;
+
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	#pragma region 敵とハンマーの当たり判定
+	// 敵の座標
+	posA = enemy_->GetWorldPosition();
+	posB = player_->GetWorldHammerPosition();
+
+	// 座標AとBの距離を求める
+	Vector3 Distance = {
+	    (posA.x - posB.x) * (posA.x - posB.x), (posA.y - posB.y) * (posA.y - posB.y),
+	    (posA.z - posB.z) * (posA.z - posB.z)};
+
+	if (Distance.x + Distance.y + Distance.z <=
+		(enemyRadius + hammerRadius) * (enemyRadius + hammerRadius))
+	{
+		// 敵の衝突時コールバック関数を呼び出す
+		enemy_->OnCollision();
+		
+		ImGui::Begin("slnsvlkvn");
+		ImGui::End();
+	}
 }

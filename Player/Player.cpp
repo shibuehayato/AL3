@@ -9,7 +9,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	BaseCharacter::Initialize(models);
 
 	worldTransformHead_.translation_ = {0, 1.8f, 0};
-	worldTransformBody_.translation_ = {0, 0, 0};
+	worldTransformBody_.translation_ = {-10.0f, 0, -30.0f};
 	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0};
 	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
 	worldTransformHammer_.translation_ = {0, 1.5f, 0};
@@ -61,10 +61,6 @@ void Player::Update() {
 		BehaviorJumpUpdate();
 		break;
 	}
-
-	ImGui::Begin("A");
-	ImGui::DragFloat3("a", &worldTransformHammer_.rotation_.x);
-	ImGui::End();
 
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
@@ -231,3 +227,18 @@ void Player::BehaviorJumpUpdate()
 		behaviorRequest_ = Behavior::kRoot;
 	}
 }
+
+Vector3 Player::GetWorldHammerPosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	if (behavior_ == Behavior::kAttack) {
+		// ワールド行列の平行移動成分を取得 (ワールド座標)
+		worldPos.x = worldTransformHammer_.matWorld_.m[3][0];
+		worldPos.y = worldTransformHammer_.matWorld_.m[3][1];
+		worldPos.z = worldTransformHammer_.matWorld_.m[3][2];
+	}
+	return worldPos;
+}
+
+void Player::Reset() { worldTransformBody_.translation_ = {-10.0f, 0, -30.0f}; }

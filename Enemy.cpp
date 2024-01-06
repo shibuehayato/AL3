@@ -18,7 +18,7 @@ void Enemy::Update() {
 	BaseCharacter::Update();
 
 	// 敵の速度
-	float EnemySpeed = 0.5f;
+	float EnemySpeed = 0.1f;
 	Vector3 velocity(0, 0, EnemySpeed);
 	// 速度ベクトルを敵の向きに合わせて回転させる
 	velocity = TransformNormal(velocity, worldTransformBody_.matWorld_);
@@ -28,8 +28,26 @@ void Enemy::Update() {
 
 void Enemy::Draw(ViewProjection viewProjection) 
 {
-	// 基底クラスの描画
-	models_[0]->Draw(worldTransformBody_, viewProjection);
-	models_[1]->Draw(worldTransformL_arm_, viewProjection);
-	models_[2]->Draw(worldTransformR_arm_, viewProjection);
+	if (isDead_ == false) {
+		// 基底クラスの描画
+		models_[0]->Draw(worldTransformBody_, viewProjection);
+		models_[1]->Draw(worldTransformL_arm_, viewProjection);
+		models_[2]->Draw(worldTransformR_arm_, viewProjection);
+	}
 }
+
+Vector3 Enemy::GetWorldPosition()
+{ 
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得 (ワールド座標)
+	worldPos.x = worldTransformBody_.matWorld_.m[3][0];
+	worldPos.y = worldTransformBody_.matWorld_.m[3][1];
+	worldPos.z = worldTransformBody_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+void Enemy::OnCollision() { isDead_ = true; }
+
+void Enemy::Reset() { isDead_ = false; }

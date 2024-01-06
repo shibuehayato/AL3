@@ -56,6 +56,11 @@ public:
 	// ジャンプ行動更新
 	void BehaviorJumpUpdate();
 
+	// ワールド座標を取得
+	Vector3 GetWorldHammerPosition();
+
+	void Reset();
+
 private:
 	// キーボード入力
 	Input* input_ = nullptr;
