@@ -90,10 +90,10 @@ void GameScene::Initialize() {
 	// 自キャラのワールドトランスフォームを追従カメラにセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
-	// 軸方向表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
-	// 軸方向表示が参照するビュープロジェクションを指定する (アドレス渡し)
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	//// 軸方向表示を有効にする
+	//AxisIndicator::GetInstance()->SetVisible(true);
+	//// 軸方向表示が参照するビュープロジェクションを指定する (アドレス渡し)
+	//AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 }
 
@@ -137,8 +137,6 @@ void GameScene::Update() {
 		// デバッグカメラの更新
 		debugCamera_->Update();
 
-		CheckCollision();
-
 #ifdef _DEBUG
 		if (input_->TriggerKey(DIK_RETURN)) {
 			isDebugCameraActive_ = true;
@@ -160,14 +158,25 @@ void GameScene::Update() {
 			viewProjection_.TransferMatrix();
 		}
 
+		//if (enemy_->GetIsDead() == true) {
+		//	scene = CLEAR;
+		//}
+
 		if (enemy_->GetIsDead() == true) {
+			deathTimer_--;
+		}
+		if (deathTimer_ <= 0) {
 			scene = CLEAR;
 		}
+
+		CheckCollision();
+
 		break;
 	case GameScene::CLEAR:
 
 		player_->Reset();
 		enemy_->Reset();
+		deathTimer_ = 60;
 
 		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {

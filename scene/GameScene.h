@@ -122,6 +122,8 @@ private: // メンバ変数
 	XINPUT_STATE joyState;
 	XINPUT_STATE prevjoyState;
 
+	int deathTimer_ = 60;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

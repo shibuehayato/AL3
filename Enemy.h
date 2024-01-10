@@ -20,4 +20,5 @@ public:
 private:
 	// デスフラグ
 	bool isDead_ = false;
+	int deathTimer_ = 60;
 };

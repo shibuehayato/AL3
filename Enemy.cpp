@@ -28,7 +28,14 @@ void Enemy::Update() {
 
 void Enemy::Draw(ViewProjection viewProjection) 
 {
-	if (isDead_ == false) {
+	//if (isDead_ == false) {
+	//	// 基底クラスの描画
+	//	models_[0]->Draw(worldTransformBody_, viewProjection);
+	//	models_[1]->Draw(worldTransformL_arm_, viewProjection);
+	//	models_[2]->Draw(worldTransformR_arm_, viewProjection);
+	//}
+
+	if (deathTimer_ > 30) {
 		// 基底クラスの描画
 		models_[0]->Draw(worldTransformBody_, viewProjection);
 		models_[1]->Draw(worldTransformL_arm_, viewProjection);
@@ -48,6 +55,12 @@ Vector3 Enemy::GetWorldPosition()
 	return worldPos;
 }
 
-void Enemy::OnCollision() { isDead_ = true; }
+void Enemy::OnCollision() { 
+	isDead_ = true;
+	deathTimer_--;
+}
 
-void Enemy::Reset() { isDead_ = false; }
+void Enemy::Reset() { 
+	isDead_ = false;
+	deathTimer_ = 60;
+}
