@@ -38,8 +38,8 @@ void Enemy::Draw(ViewProjection viewProjection)
 	if (deathTimer_ > 30) {
 		// 基底クラスの描画
 		models_[0]->Draw(worldTransformBody_, viewProjection);
-		models_[1]->Draw(worldTransformL_arm_, viewProjection);
-		models_[2]->Draw(worldTransformR_arm_, viewProjection);
+		/*models_[1]->Draw(worldTransformL_arm_, viewProjection);
+		models_[2]->Draw(worldTransformR_arm_, viewProjection);*/
 	}
 }
 
