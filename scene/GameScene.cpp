@@ -284,7 +284,7 @@ void GameScene::CheckCollision()
 		// 敵の衝突時コールバック関数を呼び出す
 		enemy_->OnCollision();
 		
-		ImGui::Begin("slnsvlkvn");
-		ImGui::End();
+	/*	ImGui::Begin("slnsvlkvn");
+		ImGui::End();*/
 	}
 }

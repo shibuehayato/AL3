@@ -103,13 +103,13 @@ void Player::UpdateFloatingGimmick() {
 	worldTransformL_arm_.rotation_.x = std::sin(floatingParameter_) * range_;
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParameter_) * range_;
 
-	ImGui::Begin("Player");
+	/*ImGui::Begin("Player");
 	ImGui::SliderFloat3("Head Translation", head_, 0.0f, 5.0f);
 	ImGui::SliderFloat3("Body Translation", body_, 0.0f, 5.0f);
 	ImGui::SliderFloat3("ArmL Translation", l_arm, -5.0f, 5.0f);
 	ImGui::SliderFloat3("ArmR Translation", r_arm, -5.0f, 5.0f);
 	ImGui::SliderFloat("range", &range_, 0.0f, 5.0f);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Player::BehaviorRootUpdate() 
