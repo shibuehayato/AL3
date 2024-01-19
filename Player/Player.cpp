@@ -123,11 +123,6 @@ void Player::BehaviorRootUpdate()
 		const float speed = 0.3f;
 
 		// 移動量
-		/*Vector3 move = {0, 0, 0};
-
-		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
-		move.z += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;*/
-
 		velocity_ = {
 		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed, 0.0f,
 		    (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed};
@@ -136,10 +131,8 @@ void Player::BehaviorRootUpdate()
 		Matrix4x4 RotationMatrix = MakeRotateMatrix(viewProjection_->rotation_);
 
 		// オフセットをカメラの回転に合わせて回転させる
-		//move = TransformNormal(move, RotationMatrix);
 		velocity_ = TransformNormal(velocity_, RotationMatrix);
 
-		//worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
 		worldTransformBody_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
 
 		// 座標移動
