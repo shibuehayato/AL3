@@ -62,10 +62,6 @@ void Player::Update() {
 		break;
 	}
 
-	ImGui::Begin("A");
-	ImGui::DragFloat3("a", &worldTransformHammer_.rotation_.x);
-	ImGui::End();
-
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
@@ -127,33 +123,39 @@ void Player::BehaviorRootUpdate()
 		const float speed = 0.3f;
 
 		// 移動量
-		Vector3 move = {0, 0, 0};
+		/*Vector3 move = {0, 0, 0};
 
 		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
-		move.z += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;
+		move.z += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;*/
+
+		velocity_ = {
+		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed, 0.0f,
+		    (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed};
 
 		// カメラの角度から回転行列を計算する
 		Matrix4x4 RotationMatrix = MakeRotateMatrix(viewProjection_->rotation_);
 
 		// オフセットをカメラの回転に合わせて回転させる
-		move = TransformNormal(move, RotationMatrix);
+		//move = TransformNormal(move, RotationMatrix);
+		velocity_ = TransformNormal(velocity_, RotationMatrix);
 
-		worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
+		//worldTransformBody_.rotation_.y = std::atan2(move.x, move.z);
+		worldTransformBody_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
 
 		// 座標移動
-		worldTransformBody_.translation_ = Add(worldTransformBody_.translation_, move);
+		worldTransformBody_.translation_ = Add(worldTransformBody_.translation_, velocity_);
 	}
 
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
-			behavior_ = Behavior::kAttack;
+			behaviorRequest_ = Behavior::kAttack;
 		}
 	}
 
 	// Bボタンを押したらジャンプ
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_B) {
-			behavior_ = Behavior::kJump;
+			behaviorRequest_ = Behavior::kJump;
 		}
 	}
 
@@ -210,7 +212,7 @@ void Player::BehaviorJumpInitialize()
 	//　ジャンプ初速
 	const float kJumpFirstSpeed = 1.0f;
 	// ジャンプ初速を与える
-	velocity_ = {0.0f, kJumpFirstSpeed, 0.0f};
+	velocity_.y = kJumpFirstSpeed;
 }
 
 void Player::BehaviorJumpUpdate() 
