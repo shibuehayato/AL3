@@ -263,7 +263,7 @@ void GameScene::Draw() {
 void GameScene::CheckCollision()
 {
 	float enemyRadius = 1.0f;
-	float hammerRadius = 4.0f;
+	float hammerRadius = 1.0f;
 
 	// 判定対象AとBの座標
 	Vector3 posA, posB;
@@ -283,8 +283,5 @@ void GameScene::CheckCollision()
 	{
 		// 敵の衝突時コールバック関数を呼び出す
 		enemy_->OnCollision();
-		
-	/*	ImGui::Begin("slnsvlkvn");
-		ImGui::End();*/
 	}
 }
