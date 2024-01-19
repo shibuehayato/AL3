@@ -3,6 +3,7 @@
 #include "MyMath.h"
 #include <ImGuiManager.h>
 #include <functional>
+#include "GlobalVariables.h"
 
 void Player::Initialize(const std::vector<Model*>& models) {
 	// 基底クラスの初期化
@@ -13,6 +14,12 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0};
 	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
 	worldTransformHammer_.translation_ = {0, 1.5f, 0};
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+	globalVariables->SetValue(groupName, "Test", 90);
 
 	worldTransformHead_.parent_ = &worldTransformBody_;
 	worldTransformL_arm_.parent_ = &worldTransformBody_;

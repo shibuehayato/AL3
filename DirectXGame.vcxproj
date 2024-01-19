@@ -112,6 +112,7 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="camera\FollowCamera.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="GlobalVariables.cpp" />
     <ClCompile Include="ground\Ground.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\MyMath.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="camera\FollowCamera.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="ground\Ground.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\Matrix4x4.h" />
