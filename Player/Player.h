@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "BaseCharacter.h"
 #include <optional>
+#include <Input.h>
 
 class Player : public BaseCharacter{
 private:

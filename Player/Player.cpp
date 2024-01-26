@@ -33,7 +33,14 @@ void Player::Initialize(const std::vector<Model*>& models) {
 }
 
 void Player::Update() { 
-		// 基底クラスの更新
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	if (input_->PushKey(DIK_SPACE)) {
+		globalVariables->SaveFile("Player");
+	}
+
+	// 基底クラスの更新
 	BaseCharacter::Update();
 
 	if (behaviorRequest_) {

@@ -3,6 +3,7 @@
 #include <variant>
 #include <map>
 #include <string>
+#include <json.hpp>
 
 class GlobalVariables {
 public:
@@ -20,6 +21,12 @@ public:
 	void SetValue(const std::string& groupName, const std::string& key, float value);
 	// 値のセット(Vector3)
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
+
+	 /// <summary>
+	/// ファイルに書き出し
+	/// </summary>
+	/// <param name="groupName">グループ</param>
+	void SaveFile(const std::string& groupName);
 
     /// <summary>
     /// 毎フレーム処理
@@ -48,5 +55,10 @@ private:
 
 	// 全データ
 	std::map<std::string, Group> datas_;
+
+	using json = nlohmann::json;
+
+	// グローバル変数の保存先ファイルパス
+	const std::string kDirectoryPath = "Resources/GlobalVariables/";
 
 };
