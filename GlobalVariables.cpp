@@ -174,3 +174,29 @@ void GlobalVariables::Update() {
 	ImGui::EndMenuBar();
 	ImGui::End();
 }
+
+void GlobalVariables::LoadFiles(const std::string& groupName) {
+	// グローバル変数の保持先ファイルパス
+	const std::string kDirectoryPath = "Resources/GlobalVariables/";
+	// ディレクトリがなければスキップする
+	if (!std::filesystem::exists(kDirectoryPath)) {
+		return;
+	}
+
+	std::filesystem::directory_iterator dir_it(kDirectoryPath);
+	for (const std::filesystem::directory_entry& entry : dir_it) {
+		// ファイルパスを取得
+		const std::filesystem::path& filePath = entry.path();
+
+		// ファイル拡張子を取得
+		std::string extension = filePath.extension().string();
+		// .jsonファイル以外はスキップ
+		if (extension.compare(".json") != 0) {
+			continue;
+		}
+
+		// ファイル読み込み
+		
+
+	}
+}

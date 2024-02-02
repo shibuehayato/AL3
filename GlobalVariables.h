@@ -61,4 +61,10 @@ private:
 	// グローバル変数の保存先ファイルパス
 	const std::string kDirectoryPath = "Resources/GlobalVariables/";
 
+	/// <summary>
+	/// ディレクトリの全ファイル読み込み
+	/// </summary>
+	/// <param name="groupName">グループ</param>
+	void LoadFiles(const std::string& groupName);
+
 };
