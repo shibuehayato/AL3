@@ -23,14 +23,17 @@ void GameScene::Initialize() {
 	TitleTexture_ = TextureManager::Load("scene/title.png");
 	OperationTexture_ = TextureManager::Load("scene/operation.png");
 	ClearTexture_ = TextureManager::Load("scene/clear.png");
+	MojiTexture_ = TextureManager::Load("scene/moji.png");
 
 	TitleSprite_ = std::make_unique<Sprite>();
 	OperationSprite_ = std::make_unique<Sprite>();
 	ClearSprite_ = std::make_unique<Sprite>();
+	MojiSprite_ = std::make_unique<Sprite>();
 
 	TitleSprite_.reset(Sprite::Create(TitleTexture_, {0, 0}));
 	OperationSprite_.reset(Sprite::Create(OperationTexture_, {0, 0}));
 	ClearSprite_.reset(Sprite::Create(ClearTexture_, {0, 0}));
+	MojiSprite_.reset(Sprite::Create(MojiTexture_, {0, 0}));
 
 	// ビュープロジェクションの初期化
 	viewProjection_.translation_ = {0, 1, -10};
@@ -104,6 +107,18 @@ void GameScene::Update() {
 	scene_->Update();
 
 	if (scene_->GetScene() == scene_->TITLE) {
+
+		Moji.x = Moji.x + speed_;
+
+		if (Moji.x >= 900) {
+			speed_ = -5;
+		}
+		if (Moji.x <= 0) {
+			speed_ = 5;
+		}
+
+		MojiSprite_->SetPosition(Moji);
+
 		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
 				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
@@ -115,6 +130,7 @@ void GameScene::Update() {
 		if (isFade == true) {
 			fadeColor_.w -= 0.005f;
 			TitleSprite_->SetColor(fadeColor_);
+			MojiSprite_->SetColor(fadeColor_);
 		}
 		if (fadeColor_.w <= 0) {
 			scene_->SetScene(scene_->OPERATION);
@@ -245,6 +261,7 @@ void GameScene::Update() {
 			    ClearSprite_->SetColor(fadeColor_);
 			    Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 			    TitleSprite_->SetColor(color);
+			    MojiSprite_->SetColor(color);
 		    }
 		    if (fadeColor_.w <= 0) {
 			    fadeColor_.w = 1.0f;
@@ -323,7 +340,8 @@ void GameScene::Draw() {
 	
 	OperationSprite_->Draw();
 	TitleSprite_->Draw();
-	
+	MojiSprite_->Draw();
+
 	if (scene_->GetScene()==scene_->CLEAR) {
 	ClearSprite_->Draw();
 	
