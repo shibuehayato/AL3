@@ -16,6 +16,7 @@
 #include "WorldTransform.h"
 #include "FollowCamera.h"
 #include "Enemy.h"
+#include "Scene.h"
 
 /// <summary>
 /// ゲームシーン
@@ -106,9 +107,11 @@ private: // メンバ変数
 	// 追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
 
+	std::unique_ptr<Scene> scene_;
+
 	// シーン切り替え
-	enum Scene { TITLE, OPERATION, GAME, CLEAR };
-	Scene scene = TITLE;
+	/*enum Scene3 { TITLE, OPERATION, GAME, CLEAR };
+	Scene3 scene3 = TITLE;*/
 	// テクスチャハンドル
 	uint32_t TitleTexture_ = 0;
 	uint32_t OperationTexture_ = 0;

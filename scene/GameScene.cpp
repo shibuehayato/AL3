@@ -80,6 +80,8 @@ void GameScene::Initialize() {
 	// デバッグカメラの生成
 	debugCamera_ = std::make_unique<DebugCamera>(2000, 2000);
 
+	scene_ = std::make_unique<Scene>();
+
 	// 追従カメラの生成
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -99,28 +101,32 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	switch (scene) {
-	case GameScene::TITLE: // タイトルシーン
-		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
-				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
-					scene = OPERATION;
-				}
-			}
-		}
-		break;
-	case GameScene::OPERATION: // 操作説明
-		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
-				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
-					scene = GAME;
-				}
-			}
-		}
-		break;
-	case GameScene::GAME:
+	scene_->Update();
+
+	//switch (scene) {
+	//case GameScene::TITLE: // タイトルシーン
+	//	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+	//		if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+	//			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	//			    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+	//				scene = OPERATION;
+	//			}
+	//		}
+	//	}
+	//	break;
+	//case GameScene::OPERATION: // 操作説明
+	//	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+	//		if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+	//			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	//			    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+	//				scene = GAME;
+	//			}
+	//		}
+	//	}
+	//	break;
+	//case GameScene::GAME:
+
+	if (scene_->GetScene() == scene_->GAME) {
 
 		// 自キャラの更新
 		player_->Update();
@@ -158,27 +164,33 @@ void GameScene::Update() {
 			viewProjection_.TransferMatrix();
 		}
 
+		if (enemy_->GetIsDead() == true) {
+			scene_->SetScene(scene_->CLEAR);
+		}
+		CheckCollision();
+	}
+
 		//if (enemy_->GetIsDead() == true) {
 		//	scene = CLEAR;
 		//}
 
-		if (enemy_->GetIsDead() == true) {
+	/*	if (enemy_->GetIsDead() == true) {
 			deathTimer_--;
 		}
 		if (deathTimer_ <= 0) {
 			scene = CLEAR;
-		}
+		}*/
 
-		CheckCollision();
+		//break;
+	//case GameScene::CLEAR:*/
 
-		break;
-	case GameScene::CLEAR:
-
+	if (scene_->GetScene() == scene_->CLEAR) {
 		player_->Reset();
 		enemy_->Reset();
 		deathTimer_ = 60;
+	}
 
-		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		/*if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
 				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
 				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
@@ -186,8 +198,8 @@ void GameScene::Update() {
 				}
 			}
 		}
-		break;
-	}
+		break;*/
+	//}
 }
 
 void GameScene::Draw() {
@@ -203,15 +215,21 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 	
-	if (scene == TITLE) {
-	TitleSprite_->Draw();
+	//if (scene == TITLE) {
+	if (scene_->GetScene() == scene_->TITLE) {
+		TitleSprite_->Draw();
 	}
-	if (scene == OPERATION) {
+	//}
+	//if (scene == OPERATION) {
+	if (scene_->GetScene() == scene_->OPERATION) {
 		OperationSprite_->Draw();
 	}
-	if (scene == CLEAR) {
+	//}
+	//if (scene == CLEAR) {
+	if (scene_->GetScene() == scene_->CLEAR) {
 		ClearSprite_->Draw();
 	}
+	//}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -227,8 +245,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	
-	if (scene == GAME) {
-
+	//if (scene == GAME) {
+	if (scene_->GetScene() == scene_->GAME) {
 		// 自キャラの描画
 		player_->Draw(viewProjection_);
 
@@ -241,6 +259,7 @@ void GameScene::Draw() {
 		// 地面の描画
 		ground_->Draw(viewProjection_);
 	}
+	//}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
