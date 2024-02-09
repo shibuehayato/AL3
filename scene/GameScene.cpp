@@ -103,6 +103,39 @@ void GameScene::Update() {
 
 	scene_->Update();
 
+	if (scene_->GetScene() == scene_->TITLE) {
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					isFade = true;
+				}
+			}
+		}
+		if (isFade == true) {
+			fadeColor_.w -= 0.005f;
+			TitleSprite_->SetColor(fadeColor_);
+		}
+		if (fadeColor_.w <= 0) {
+			scene_->SetScene(scene_->OPERATION);
+			fadeColor_.w = 1.0f;
+			ClearSprite_->SetColor(fadeColor_);
+			isFade = false;
+		}
+	}
+
+	if (scene_->GetScene() == scene_->OPERATION) {
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					isFade = true;
+					scene_->SetScene(scene_->GAME);
+				}
+			}
+		}
+	}
+
 	//switch (scene) {
 	//case GameScene::TITLE: // タイトルシーン
 	//	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
@@ -128,6 +161,15 @@ void GameScene::Update() {
 
 	if (scene_->GetScene() == scene_->GAME) {
 
+		if (isFade == true) {
+			fadeColor_.w -= 0.005f;
+			OperationSprite_->SetColor(fadeColor_);
+		}
+		if (fadeColor_.w <= 0) {
+			fadeColor_.w = 1.0f;
+			isFade = false;
+		}
+
 		// 自キャラの更新
 		player_->Update();
 
@@ -144,30 +186,30 @@ void GameScene::Update() {
 		debugCamera_->Update();
 
 #ifdef _DEBUG
-		if (input_->TriggerKey(DIK_RETURN)) {
-			isDebugCameraActive_ = true;
-		}
+			if (input_->TriggerKey(DIK_RETURN)) {
+				isDebugCameraActive_ = true;
+			}
 #endif
 
-		// カメラの処理
-		if (isDebugCameraActive_) {
-			debugCamera_->Update();
-			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-			// ビュープロジェクション行列の転送
-			viewProjection_.TransferMatrix();
-		} else {
-			// 追従カメラの更新
-			followCamera_->Update();
-			viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-			viewProjection_.matView = followCamera_->GetViewProjection().matView;
-			viewProjection_.TransferMatrix();
-		}
+			// カメラの処理
+			if (isDebugCameraActive_) {
+				debugCamera_->Update();
+				viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+				viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+				// ビュープロジェクション行列の転送
+				viewProjection_.TransferMatrix();
+			} else {
+				// 追従カメラの更新
+				followCamera_->Update();
+				viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+				viewProjection_.matView = followCamera_->GetViewProjection().matView;
+				viewProjection_.TransferMatrix();
+			}
 
-		if (enemy_->GetIsDead() == true) {
-			scene_->SetScene(scene_->CLEAR);
-		}
-		CheckCollision();
+			if (enemy_->GetIsDead() == true) {
+				scene_->SetScene(scene_->CLEAR);
+			}
+			CheckCollision();
 	}
 
 		//if (enemy_->GetIsDead() == true) {
@@ -185,9 +227,31 @@ void GameScene::Update() {
 	//case GameScene::CLEAR:*/
 
 	if (scene_->GetScene() == scene_->CLEAR) {
-		player_->Reset();
-		enemy_->Reset();
-		deathTimer_ = 60;
+		    player_->Reset();
+		    enemy_->Reset();
+		    deathTimer_ = 60;
+
+		   if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			   if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				   if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					isFade = true;
+				   }
+			   }
+		   }
+
+		    if (isFade == true) {
+			    fadeColor_.w -= 0.005f;
+			    ClearSprite_->SetColor(fadeColor_);
+			    Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+			    TitleSprite_->SetColor(color);
+		    }
+		    if (fadeColor_.w <= 0) {
+			    fadeColor_.w = 1.0f;
+			    scene_->SetScene(scene_->TITLE);
+			    OperationSprite_->SetColor(fadeColor_);
+			    isFade = false;
+		    }
 	}
 
 		/*if (Input::GetInstance()->GetJoystickState(0, joyState)) {
@@ -214,22 +278,6 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-	
-	//if (scene == TITLE) {
-	if (scene_->GetScene() == scene_->TITLE) {
-		TitleSprite_->Draw();
-	}
-	//}
-	//if (scene == OPERATION) {
-	if (scene_->GetScene() == scene_->OPERATION) {
-		OperationSprite_->Draw();
-	}
-	//}
-	//if (scene == CLEAR) {
-	if (scene_->GetScene() == scene_->CLEAR) {
-		ClearSprite_->Draw();
-	}
-	//}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -244,7 +292,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
+
 	//if (scene == GAME) {
 	if (scene_->GetScene() == scene_->GAME) {
 		// 自キャラの描画
@@ -272,6 +320,14 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	
+	OperationSprite_->Draw();
+	TitleSprite_->Draw();
+	
+	if (scene_->GetScene()==scene_->CLEAR) {
+	ClearSprite_->Draw();
+	
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

@@ -127,6 +127,9 @@ private: // メンバ変数
 
 	int deathTimer_ = 60;
 
+	Vector4 fadeColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
+	bool isFade = false;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
