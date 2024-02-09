@@ -7,7 +7,7 @@ void BaseCharacter::Initialize(const std::vector<Model*>& models)
 	worldTransformHead_.Initialize();
 	worldTransformL_arm_.Initialize();
 	worldTransformR_arm_.Initialize();
-	worldTransformHammer_.Initialize();
+	//worldTransformHammer_.Initialize();
 }
 
 void BaseCharacter::Update() 
@@ -16,7 +16,7 @@ void BaseCharacter::Update()
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
-	worldTransformHammer_.UpdateMatrix();
+	//worldTransformHammer_.UpdateMatrix();
 }
 
 void BaseCharacter::Draw(const ViewProjection& viewProjection)

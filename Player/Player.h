@@ -57,6 +57,10 @@ public:
 	// ジャンプ行動更新
 	void BehaviorJumpUpdate();
 
+	Vector3 GetHammerWorldPos();
+		
+	void Reset();
+
 private:
 	// キーボード入力
 	Input* input_ = nullptr;
@@ -74,6 +78,8 @@ private:
 
 	// 速度
 	Vector3 velocity_ = {};
+
+	WorldTransform worldTransformHammer_;
 
 	float head_[3] = {0, 1.4f, 0};
 	float body_[3] = {0, 0.2f, 0};

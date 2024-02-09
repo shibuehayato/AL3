@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include <ImGuiManager.h>
 
 GameScene::GameScene() {}
 
@@ -18,6 +19,25 @@ void GameScene::Initialize() {
 
 	// 3Dモデルデータの生成
 	model_.reset(Model::Create());
+
+	TitleTexture_ = TextureManager::Load("scene/title.png");
+	OperationTexture_ = TextureManager::Load("scene/operation.png");
+	ClearTexture_ = TextureManager::Load("scene/clear.png");
+	MojiTexture_ = TextureManager::Load("scene/moji.png");
+
+	TitleSprite_ = std::make_unique<Sprite>();
+	OperationSprite_ = std::make_unique<Sprite>();
+	ClearSprite_ = std::make_unique<Sprite>();
+	MojiSprite_ = std::make_unique<Sprite>();
+
+	Moji.x = 0;
+	Moji.y = 0;
+	speed_ = 5.0f;
+
+	TitleSprite_.reset(Sprite::Create(TitleTexture_, {0, 0}));
+	OperationSprite_.reset(Sprite::Create(OperationTexture_, {0, 0}));
+	ClearSprite_.reset(Sprite::Create(ClearTexture_, {0, 0}));
+	MojiSprite_.reset(Sprite::Create(MojiTexture_, {Moji.x, Moji.y}));
 
 	// ビュープロジェクションの初期化
 	viewProjection_.translation_ = {0, 1, -10};
@@ -86,6 +106,68 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+		// 天球の更新
+	skydome_->Update();
+
+	switch (scene) {
+
+	case GameScene::TITLE: // タイトルシーン
+
+		Moji.x = Moji.x + speed_;
+
+		if (Moji.x >= 900) {
+			speed_ = -5;
+		}
+		if (Moji.x <= 0) {
+			speed_ = 5;
+		}
+
+		MojiSprite_->SetPosition(Moji);
+
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					isFade = true;
+				}
+			}
+		}
+
+		if (isFade == true) {
+			fadeColor_.w -= 0.005f;
+			TitleSprite_->SetColor(fadeColor_);
+			MojiSprite_->SetColor(fadeColor_);
+		}
+		if (fadeColor_.w <= 0) {
+			scene = OPERATION;
+			isFade = false;
+			fadeColor_.w = 1.0f;
+			OperationSprite_->SetColor(fadeColor_);
+		}
+
+		break;
+	case GameScene::OPERATION: // 操作説明
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					isFade = true;
+				}
+			}
+		}
+
+		if (isFade == true) {
+			fadeColor_.w -= 0.005f;
+			OperationSprite_->SetColor(fadeColor_);
+		}
+		if (fadeColor_.w <= 0) {
+			scene = GAME;
+			isFade = false;
+			fadeColor_.w = 1.0f;
+		}
+		break;
+	case GameScene::GAME:
+
 	// 自キャラの更新
 	player_->Update();
 
@@ -93,13 +175,20 @@ void GameScene::Update() {
 	enemy_->Update();
 
 	// 天球の更新
-	skydome_->Update();
+	//skydome_->Update();
 
 	// 地面の更新
 	ground_->Update();
 
 	// デバッグカメラの更新
 	debugCamera_->Update();
+
+	if (enemy_->GetIsDead() == true) {
+			ClearSprite_->SetColor(fadeColor_);
+			scene = CLEAR;
+	}
+
+	CheckAllCollision();
 
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_RETURN)) {
@@ -121,6 +210,38 @@ void GameScene::Update() {
 		viewProjection_.matView = followCamera_->GetViewProjection().matView;
 		viewProjection_.TransferMatrix();
 	}
+	break;
+	case GameScene::CLEAR:
+
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		if (Input::GetInstance()->GetJoystickStatePrevious(0, prevjoyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+				    !(prevjoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+					isFade = true;
+				}
+		}
+	}
+
+	if (isFade == true) {
+		fadeColor_.w -= 0.005f;
+		ClearSprite_->SetColor(fadeColor_);
+	}
+	if (fadeColor_.w <= 0) {
+		scene = TITLE;
+		isFade = false;
+		fadeColor_.w = 1.0f;
+		TitleSprite_->SetColor(fadeColor_);
+		MojiSprite_->SetColor(fadeColor_);
+		OperationSprite_->SetColor(fadeColor_);
+
+		player_->Reset();
+		enemy_->Reset();
+
+	}
+	break;
+	default:
+	break;
+	}
 
 }
 
@@ -137,6 +258,10 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 	
+	//if (scene == TITLE) {
+	//}
+	//if (scene == OPERATION) {
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -150,6 +275,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	//if (scene == GAME) {
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
 
@@ -161,6 +288,7 @@ void GameScene::Draw() {
 
 	// 地面の描画
 	ground_->Draw(viewProjection_);
+	//}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -174,8 +302,39 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
+	OperationSprite_->Draw();
+	TitleSprite_->Draw();
+	MojiSprite_->Draw();
+	//}
+	if (scene == CLEAR) {
+	ClearSprite_->Draw();
+	}
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
+
+#pragma endregion
+}
+
+void GameScene::CheckAllCollision() {
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	float enemyRadius = 1.0f;
+	float HammerRadius = 1.0f;
+
+#pragma region ハンマーと敵の当たり判定
+	posA = player_->GetHammerWorldPos();
+	posB = enemy_->GetWorldPos();
+
+	Vector3 Distance = {
+	    (posA.x - posB.x) * (posA.x - posB.x), (posA.y - posB.y) * (posA.y - posB.y),
+	    (posA.z - posB.z) * (posA.z - posB.z)};
+
+	 if (Distance.x + Distance.y + Distance.z <=
+	    (enemyRadius + HammerRadius) * (enemyRadius + HammerRadius)) {
+		enemy_->OnCollision();
+	}
 
 #pragma endregion
 }

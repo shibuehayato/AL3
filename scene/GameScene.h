@@ -48,6 +48,11 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
+	void CheckAllCollision();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -100,6 +105,31 @@ private: // メンバ変数
 
 	// 追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
+
+	// シーン切り替え
+	enum Scene { TITLE, OPERATION, GAME, CLEAR };
+	Scene scene = TITLE;
+	// テクスチャハンドル
+	uint32_t TitleTexture_ = 0;
+	uint32_t OperationTexture_ = 0;
+	uint32_t ClearTexture_ = 0;
+	uint32_t MojiTexture_ = 0;
+	// シーン画面のスプライト
+	std::unique_ptr<Sprite> TitleSprite_ = nullptr;
+	std::unique_ptr<Sprite> OperationSprite_ = nullptr;
+	std::unique_ptr<Sprite> ClearSprite_ = nullptr;
+	std::unique_ptr<Sprite> MojiSprite_ = nullptr;
+
+    // ゲームパッドの状態を得る変数
+	XINPUT_STATE joyState;
+	XINPUT_STATE prevjoyState;
+
+	Vector2 Moji;
+	float speed_;
+
+	Vector4 fadeColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
+
+	bool isFade = false;
 
 	/// <summary>
 	/// ゲームシーン用

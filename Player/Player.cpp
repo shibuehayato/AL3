@@ -9,11 +9,13 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	// 基底クラスの初期化
 	BaseCharacter::Initialize(models);
 
-	worldTransformHead_.translation_ = {0, 1.8f, 0};
-	worldTransformBody_.translation_ = {0, 0, 0};
-	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0};
-	worldTransformR_arm_.translation_ = {0.5, 1.5, 0};
-	worldTransformHammer_.translation_ = {0, 1.5f, 0};
+	worldTransformHead_.translation_ = {0, 1.8f, 0.0f};
+	worldTransformBody_.translation_ = {10.0f, 0, 0.0f};
+	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0.0f};
+	worldTransformR_arm_.translation_ = {0.5, 1.5, 0.0f};
+	worldTransformHammer_.translation_ = {0, 1.5f, 0.0f};
+
+	worldTransformHammer_.Initialize();
 
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -35,6 +37,12 @@ void Player::Initialize(const std::vector<Model*>& models) {
 void Player::Update() { 
 
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	ImGui::Begin("window");
+	ImGui::DragFloat3("hammer", &worldTransformHammer_.matWorld_.m[3][0]);
+	ImGui::DragFloat3("player", &worldTransformBody_.matWorld_.m[3][0]);
+	ImGui::End();
+	
 
 	if (input_->PushKey(DIK_SPACE)) {
 		globalVariables->SaveFile("Player");
@@ -80,6 +88,7 @@ void Player::Update() {
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
+	worldTransformHammer_.UpdateMatrix();
 }
 
 void Player::Draw(ViewProjection viewProjection) {
@@ -207,8 +216,7 @@ void Player::BehaviorRootInitialize()
 	worldTransformR_arm_.rotation_.x = 0;
 }
 
-void Player::BehaviorAttackInitialize() 
-{}
+void Player::BehaviorAttackInitialize() {}
 
 void Player::BehaviorJumpInitialize() 
 { 
@@ -239,4 +247,24 @@ void Player::BehaviorJumpUpdate()
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
 	}
+}
+
+Vector3 Player::GetHammerWorldPos() { 
+	Vector3 pos;
+
+	if (behavior_ == Behavior::kAttack) {
+		pos.x = worldTransformHammer_.matWorld_.m[3][0];
+		pos.y = worldTransformHammer_.matWorld_.m[3][1];
+		pos.z = worldTransformHammer_.matWorld_.m[3][2];
+	}
+
+	return pos;
+}
+
+void Player::Reset() {
+	worldTransformHead_.translation_ = {0, 1.8f, 0.0f};
+	worldTransformBody_.translation_ = {10.0f, 0, 0.0f};
+	worldTransformL_arm_.translation_ = {-0.5f, 1.5, 0.0f};
+	worldTransformR_arm_.translation_ = {0.5, 1.5, 0.0f};
+	worldTransformHammer_.translation_ = {0, 1.5f, 0.0f};
 }
